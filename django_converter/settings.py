@@ -85,8 +85,19 @@ DATABASES = {
         'PASSWORD': os.environ.get('DB_PWD'),
         'HOST': os.environ.get('DB_HOST'),
         'PORT': os.environ.get('DB_PORT'),
+        'OPTIONS': {
+            'options': '-c search_path=public'
+        }
     }
 }
+
+AUTH_USER_MODEL = 'converter_app.User'
+
+
+AUTHENTICATION_BACKENDS = [
+    'converter_app.backends.EmailBackend',  # Adjust path if your app is named differently
+    'django.contrib.auth.backends.ModelBackend',  # Optional fallback
+]
 
 
 # Password validation

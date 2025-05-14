@@ -141,48 +141,61 @@
     <div class="container">
         <div class="auth-container">
             <!-- Login Form -->
-            <div class="auth-box" id="login-box">
+            <div class="auth-box" id="login_box">
                 <h2>Login</h2>
-                <form id="login-form">
+                <form name="login_form" id="login_form" action="{% url 'before_login' %}" method="post">
+                    {% csrf_token %}
                     <div class="form-group">
-                        <label for="login-email">Email</label>
-                        <input type="email" id="login-email" required>
+                        <label for="login_email">Email</label>
+                        <input name="login_email" type="email" id="login_email" required
+                               value="{{ request.POST.login_email|default:'' }}">
                     </div>
                     <div class="form-group">
-                        <label for="login-password">Password</label>
-                        <input type="password" id="login-password" required>
+                        <label for="login_password">Password</label>
+                        <input name="login_password" type="password" id="login_password" required>
                     </div>
                     <button type="submit" class="btn">Login</button>
                 </form>
                 <div class="switch-auth">
-                    Don't have an account? <a href="#" id="show-register">Register</a>
+                    Don't have an account? <a href="#" id="show_register">Register</a>
                 </div>
             </div>
             
             <!-- Register Form (hidden by default) -->
-            <div class="auth-box" id="register-box" style="display: none;">
+            <div class="auth-box" id="register_box" {% if not show_register %}style="display: none;"{% endif %}>
                 <h2>Register</h2>
-                <form id="register-form">
+                {% if register_error %}
+                    <div class="alert alert-danger">{{ register_error }}</div>
+                {% endif %}
+                
+                <form name="register_form" id="register_form" action="{% url 'before_login' %}" method="post">
+                    {% csrf_token %}
                     <div class="form-group">
-                        <label for="register-name">Full Name</label>
-                        <input type="text" id="register-name" required>
+                        <label for="register_name">Full Name</label>
+                        <input name="register_name" type="text" id="register_name" required
+                            value="{{ request.POST.register_name|default:'' }}">
+                        {% if name_error %}<div class="error-text">{{ name_error }}</div>{% endif %}
                     </div>
                     <div class="form-group">
-                        <label for="register-email">Email</label>
-                        <input type="email" id="register-email" required>
+                        <label for="register_email">Email</label>
+                        <input name="register_email" type="email" id="register_email" required
+                            value="{{ request.POST.register_email|default:'' }}">
+                        {% if email_error %}<div class="error-text">{{ email_error }}</div>{% endif %}
                     </div>
                     <div class="form-group">
-                        <label for="register-password">Password</label>
-                        <input type="password" id="register-password" required>
+                        <label for="register_password">Password</label>
+                        <input name="register_password" type="password" id="register_password" required>
+                        {% if password_error %}<div class="error-text">{{ password_error }}</div>{% endif %}
                     </div>
                     <div class="form-group">
-                        <label for="register-confirm">Confirm Password</label>
-                        <input type="password" id="register-confirm" required>
+                        <label for="register_confirm_password">Confirm Password</label>
+                        <input name="register_confirm_password" type="password" id="register_confirm_password" required>
+                        {% if confirm_error %}<div class="error-text">{{ confirm_error }}</div>{% endif %}
                     </div>
                     <button type="submit" class="btn">Register</button>
                 </form>
                 <div class="switch-auth">
-                    Already have an account? <a href="#" id="show-login">Login</a>
+                    Already have an account? <a href="#" id="show_login">Login</a>
                 </div>
             </div>
         </div>
@@ -196,41 +209,31 @@
     
     <script>
         // Toggle between login and register forms
-        document.getElementById('show-register').addEventListener('click', function(e) {
+        document.getElementById('show_register').addEventListener('click', function(e) {
             e.preventDefault();
-            document.getElementById('login-box').style.display = 'none';
-            document.getElementById('register-box').style.display = 'block';
+            document.getElementById('login_box').style.display = 'none';
+            document.getElementById('register_box').style.display = 'block';
         });
         
-        document.getElementById('show-login').addEventListener('click', function(e) {
+        document.getElementById('show_login').addEventListener('click', function(e) {
             e.preventDefault();
-            document.getElementById('register-box').style.display = 'none';
-            document.getElementById('login-box').style.display = 'block';
+            document.getElementById('register_box').style.display = 'none';
+            document.getElementById('login_box').style.display = 'block';
         });
         
-        // Form submission (would be handled by backend in real application)
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // In a real app, you would validate and send to server
-            alert('Login functionality would be implemented here');
-            // For demo purposes, redirect to converter page
-            window.location.href = 'converter.html';
+        // Form submission
+        document.getElementById('login_form').addEventListener('submit', function(e) {
+            // Form would be submitted to server in real application
         });
         
-        document.getElementById('register-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const password = document.getElementById('register-password').value;
-            const confirm = document.getElementById('register-confirm').value;
+        document.getElementById('register_form').addEventListener('submit', function(e) {
+            const password = document.getElementById('register_password').value;
+            const confirm = document.getElementById('register_confirm_password').value;
             
             if (password !== confirm) {
+                e.preventDefault();
                 alert('Passwords do not match!');
-                return;
             }
-            
-            // In a real app, you would send to server
-            alert('Registration successful! Please login.');
-            document.getElementById('register-box').style.display = 'none';
-            document.getElementById('login-box').style.display = 'block';
         });
     </script>
 </body>
