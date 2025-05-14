@@ -1,5 +1,5 @@
 .venv
 .env
 *.sqlite3
-__pycache__
+*pycache*
 migrations
