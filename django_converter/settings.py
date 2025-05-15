@@ -52,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'converter_app.middleware.remove_next_param.RemoveNextForAnonymousMiddleware',
 ]
 
 ROOT_URLCONF = 'django_converter.urls'
@@ -98,6 +99,18 @@ AUTHENTICATION_BACKENDS = [
     'converter_app.backends.EmailBackend',  # Adjust path if your app is named differently
     'django.contrib.auth.backends.ModelBackend',  # Optional fallback
 ]
+
+
+# E-Mail Backend
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+
+LOGIN_URL = '/'
 
 
 # Password validation

@@ -1,12 +1,27 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from .models import User
+from .utils import generate_otp, send_otp_email
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 
 
 def before_login(request):
     if request.method == 'POST':
         if 'login_email' in request.POST:
-            pass  # You’ll handle this later.
+            email = request.POST.get('login_email', '').strip()
+            password = request.POST.get('login_password', '').strip()
+
+            user = authenticate(request, email=email, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('after_login')
+            else:
+                return render(request, "before_login.html", {
+                    'login_error': 'Invalid email or password',
+                    'show_login': True
+                })
+            
         elif 'register_email' in request.POST:
             name = request.POST.get('register_name', '').strip()
             email = request.POST.get('register_email', '').strip()
@@ -20,7 +35,7 @@ def before_login(request):
             if not email:
                 errors['email_error'] = 'Email is required'
             elif User.objects.filter(email=email).exists():
-                errors['email_error'] = 'Email already exists'
+                errors['email_error'] = 'Email already exists, reset password ?'
             if not password:
                 errors['password_error'] = 'Password is required'
             elif password != confirm_password:
@@ -31,24 +46,60 @@ def before_login(request):
                     **errors,
                     'show_register': True
                 })
+            
+            # Generate otp and send OTP
+            otp = generate_otp()
+            send_otp_email(email, otp)
 
-            try:
-                user = User.objects.create_user(
-                    email=email,
-                    full_name=name,
-                    password=password
-                )
-                # login(request, user)
-                return redirect('after_login')
-            except Exception as e:
-                return render(request, "before_login.html", {
-                    'register_error': 'Registration failed. Please try again.',
-                    'show_register': True
-                })
+            # Store user input and OTP in session
+            request.session['pending_user'] = {
+                'name': name,
+                'email': email,
+                'password': password,
+                'otp': str(otp)
+            }
+
+            return redirect('verify_otp')
 
     # GET request or no form submitted
     return render(request, "before_login.html", {'show_register': False})
 
+def verify_otp(request):
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp')
+        session_data = request.session.get('pending_user')
 
+        if session_data and entered_otp == session_data['otp']:
+            try:
+                user = User.objects.create_user(
+                    email=session_data['email'],
+                    full_name=session_data['name'],
+                    password=session_data['password']
+                )
+                user = authenticate(request, email=session_data['email'], password=session_data['password'])
+                if user:
+                    login(request, user)
+                del request.session['pending_user']
+                return redirect('after_login')
+            except Exception:
+                return render(request, "otp/verify_otp.html", {
+                    'error': 'Failed to create user. Try again.'
+                })
+
+        return render(request, "otp/verify_otp.html", {
+            'error': 'Invalid OTP'
+        })
+
+    return render(request, "otp/verify_otp.html")
+
+
+@login_required
+@never_cache
 def after_login(request):
     return render(request, "after_login.html")
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return redirect('before_login')
+

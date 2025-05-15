@@ -175,9 +175,11 @@
         <div class="header-content">
             <div class="logo">FileConverter Pro</div>
             <div class="user-menu">
-                <span>Welcome, User</span>
-                <img src="https://via.placeholder.com/40" alt="User Avatar">
-                <button class="btn logout-btn" id="logout-btn">Logout</button>
+                <form action="{% url 'user_logout' %}" method="post">
+                    {% csrf_token %}
+                    <span>Welcome, {{ user }}</span>
+                    <button class="btn logout-btn" id="logout-btn">Logout</button>
+                </form>
             </div>
         </div>
     </header>
