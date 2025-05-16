@@ -4,295 +4,700 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Converter - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #e0e0e0;
+            --card-bg: #ffffff;
+            --sidebar-bg: #f1f3f5;
+        }
+
         * {
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
-            color: #333;
+            font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        
+
         header {
-            background-color: #4285f4;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        
+
+        .header-container {
+            width: 100%;
+            padding: 0 2rem;
+            margin: 0 auto;
+        }
+
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            width: 100%;
+            max-width: 100%;
         }
-        
+
         .logo {
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
-        
+
         .user-menu {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 1.5rem;
         }
-        
-        .user-menu img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        
-        .main-content {
-            margin-top: 30px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 30px;
-        }
-        
-        h1 {
-            margin-top: 0;
-            color: #4285f4;
-        }
-        
-        .converter-section {
-            margin-bottom: 40px;
-        }
-        
-        .converter-section h2 {
-            color: #555;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-        
-        .converter-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .converter-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .converter-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-        }
-        
-        .converter-card h3 {
-            margin-top: 0;
-            color: #4285f4;
-        }
-        
-        .file-input {
-            margin: 15px 0;
-        }
-        
-        .file-input label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .file-input input[type="file"] {
-            width: 100%;
-        }
-        
+
         .btn {
-            background-color: #4285f4;
+            background-color: var(--primary);
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.25rem;
             cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        
+
         .btn:hover {
-            background-color: #3367d6;
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
+
+        .logout-btn {
+            background-color: #dc3545;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        .main-wrapper {
+            display: flex;
+            flex: 1;
+            width: 100%;
+        }
+
+        .main-container {
+            flex: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: var(--sidebar-bg);
+            border-left: 1px solid var(--border);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .page-description {
+            color: var(--gray);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            max-width: 800px;
+        }
+
+        .converter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .converter-section {
+            margin-bottom: 3rem;
+        }
+
+        .converter-section h2 {
+            color: var(--dark);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .converter-card {
+            background-color: var(--card-bg);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .converter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .converter-card h3 {
+            color: var(--primary);
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .converter-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .file-input-container {
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .file-input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-button {
+            border: 1px solid var(--border);
+            border-radius: 0.25rem;
+            padding: 0.75rem 1rem;
+            background-color: var(--light);
+            color: var(--dark);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .file-input-button:hover {
+            background-color: #e9ecef;
+        }
+
+        .file-input-button i {
+            color: var(--primary);
+        }
+
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
         .btn-block {
             display: block;
             width: 100%;
-            padding: 12px;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
         }
-        
-        .logout-btn {
-            background-color: #f44336;
+
+        /* Sidebar Content */
+        .sidebar-section {
+            margin-bottom: 2rem;
         }
-        
-        .logout-btn:hover {
-            background-color: #d32f2f;
+
+        .sidebar-section h3 {
+            color: var(--dark);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
         }
-        
+
+        .recent-files {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s;
+        }
+
+        .file-item:hover {
+            background-color: #e9ecef;
+        }
+
+        .file-icon {
+            font-size: 1.25rem;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .file-date {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background-color: white;
+            border-radius: 0.25rem;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .action-btn:hover i {
+            color: white;
+        }
+
         footer {
+            background-color: white;
+            padding: 1.5rem;
             text-align: center;
-            margin-top: 50px;
-            padding: 20px;
-            color: #666;
+            color: var(--gray);
+            font-size: 0.95rem;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
         }
-        
+
+        /* File type icons */
+        .docx-icon { color: #2b579a; }
+        .pdf-icon { color: #d32626; }
+        .txt-icon { color: #5c5c5c; }
+        .jpg-icon { color: #26a69a; }
+        .png-icon { color: #2196f3; }
+        .xlsx-icon { color: #217346; }
+        .pptx-icon { color: #d24726; }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                padding: 1.5rem;
+            }
+            
+            .sidebar {
+                width: 250px;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid var(--border);
+                padding: 1.5rem;
+                order: 2;
+            }
+            
+            .main-container {
+                order: 1;
+            }
+        }
+
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
-                gap: 10px;
+                align-items: flex-start;
+                gap: 1rem;
             }
             
             .user-menu {
-                margin-top: 10px;
+                width: 100%;
+                justify-content: space-between;
             }
             
-            .converter-options {
+            .converter-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .main-container {
+                padding: 1rem;
+            }
+        }
+
+        /* Animation for file selection */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .file-selected {
+            animation: fadeIn 0.3s ease-out;
+            font-weight: 500;
+            color: var(--primary);
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <div class="header-content">
-            <div class="logo">FileConverter Pro</div>
-            <div class="user-menu">
-                <form action="{% url 'user_logout' %}" method="post">
-                    {% csrf_token %}
+        <div class="header-container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-file-export"></i>
+                    <span>FileConverter Pro</span>
+                </div>
+                <div class="user-menu">
                     <span>Welcome, {{ user }}</span>
-                    <button class="btn logout-btn" id="logout-btn">Logout</button>
-                </form>
+                    <form action="{% url 'user_logout' %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn logout-btn" id="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </header>
     
-    <div class="container">
-        <div class="main-content">
-            <h1>File Converter</h1>
-            <p>Convert your files between various formats quickly and securely.</p>
-            
-            <!-- Document Converters -->
-            <div class="converter-section">
-                <h2>Document Converters</h2>
-                <div class="converter-options">
-                    <div class="converter-card">
-                        <h3>DOCX to PDF</h3>
-                        <p>Convert Word documents to PDF format</p>
-                        <div class="file-input">
-                            <label for="docx-pdf">Select DOCX file:</label>
-                            <input type="file" id="docx-pdf" accept=".docx,.doc">
+    <div class="main-wrapper">
+        <div class="main-container">
+            <div class="main-content">
+                <h1>File Conversion Dashboard</h1>
+                <p class="page-description">Convert your files between various formats quickly and securely with our powerful conversion tools.</p>
+                
+                <!-- Document Converters -->
+                <div class="converter-section">
+                    <h2><i class="fas fa-file-alt"></i> Document Converters</h2>
+                    <div class="converter-grid">
+                        <div class="converter-card">
+                            <h3><i class="fas fa-file-word docx-icon"></i> DOCX to PDF</h3>
+                            <p>Convert Word documents to PDF format while preserving all formatting and layout elements.</p>
+                            <div class="file-input-container">
+                                <label class="file-input-label">Select DOCX file:</label>
+                                <div class="file-input-wrapper">
+                                    <span class="file-input-button" id="docx-pdf-label">
+                                        <span>Choose file</span>
+                                        <i class="fas fa-paperclip"></i>
+                                    </span>
+                                    <input type="file" class="file-input" id="docx-pdf" accept=".docx,.doc">
+                                </div>
+                            </div>
+                            <button class="btn btn-block convert-btn">
+                                <i class="fas fa-file-pdf pdf-icon"></i> Convert to PDF
+                            </button>
                         </div>
-                        <button class="btn btn-block">Convert to PDF</button>
+                        
+                        <div class="converter-card">
+                            <h3><i class="fas fa-file-pdf pdf-icon"></i> PDF to DOCX</h3>
+                            <p>Transform PDF files into editable Word documents with accurate text recognition.</p>
+                            <div class="file-input-container">
+                                <label class="file-input-label">Select PDF file:</label>
+                                <div class="file-input-wrapper">
+                                    <span class="file-input-button" id="pdf-docx-label">
+                                        <span>Choose file</span>
+                                        <i class="fas fa-paperclip"></i>
+                                    </span>
+                                    <input type="file" class="file-input" id="pdf-docx" accept=".pdf">
+                                </div>
+                            </div>
+                            <button class="btn btn-block convert-btn">
+                                <i class="fas fa-file-word docx-icon"></i> Convert to DOCX
+                            </button>
+                        </div>
+                        
+                        <div class="converter-card">
+                            <h3><i class="fas fa-file-word docx-icon"></i> DOCX to TXT</h3>
+                            <p>Extract plain text content from Word documents without any formatting.</p>
+                            <div class="file-input-container">
+                                <label class="file-input-label">Select DOCX file:</label>
+                                <div class="file-input-wrapper">
+                                    <span class="file-input-button" id="docx-txt-label">
+                                        <span>Choose file</span>
+                                        <i class="fas fa-paperclip"></i>
+                                    </span>
+                                    <input type="file" class="file-input" id="docx-txt" accept=".docx,.doc">
+                                </div>
+                            </div>
+                            <button class="btn btn-block convert-btn">
+                                <i class="fas fa-file-alt txt-icon"></i> Convert to TXT
+                            </button>
+                        </div>
                     </div>
-                    
-                    <div class="converter-card">
-                        <h3>PDF to DOCX</h3>
-                        <p>Convert PDF files to editable Word documents</p>
-                        <div class="file-input">
-                            <label for="pdf-docx">Select PDF file:</label>
-                            <input type="file" id="pdf-docx" accept=".pdf">
+                </div>
+                
+                <!-- Image Converters -->
+                <div class="converter-section">
+                    <h2><i class="fas fa-image"></i> Image Converters</h2>
+                    <div class="converter-grid">
+                        <div class="converter-card">
+                            <h3><i class="fas fa-file-image jpg-icon"></i> JPG to PNG</h3>
+                            <p>Convert JPG images to high-quality PNG format with transparency support.</p>
+                            <div class="file-input-container">
+                                <label class="file-input-label">Select JPG file:</label>
+                                <div class="file-input-wrapper">
+                                    <span class="file-input-button" id="jpg-png-label">
+                                        <span>Choose file</span>
+                                        <i class="fas fa-paperclip"></i>
+                                    </span>
+                                    <input type="file" class="file-input" id="jpg-png" accept=".jpg,.jpeg">
+                                </div>
+                            </div>
+                            <button class="btn btn-block convert-btn">
+                                <i class="fas fa-file-image png-icon"></i> Convert to PNG
+                            </button>
                         </div>
-                        <button class="btn btn-block">Convert to DOCX</button>
+                        
+                        <div class="converter-card">
+                            <h3><i class="fas fa-file-image png-icon"></i> PNG to JPG</h3>
+                            <p>Transform PNG images to JPG format with customizable quality settings.</p>
+                            <div class="file-input-container">
+                                <label class="file-input-label">Select PNG file:</label>
+                                <div class="file-input-wrapper">
+                                    <span class="file-input-button" id="png-jpg-label">
+                                        <span>Choose file</span>
+                                        <i class="fas fa-paperclip"></i>
+                                    </span>
+                                    <input type="file" class="file-input" id="png-jpg" accept=".png">
+                                </div>
+                            </div>
+                            <button class="btn btn-block convert-btn">
+                                <i class="fas fa-file-image jpg-icon"></i> Convert to JPG
+                            </button>
+                        </div>
+                        
+                        <div class="converter-card">
+                            <h3><i class="fas fa-images"></i> Image to PDF</h3>
+                            <p>Combine multiple images into a single PDF document with flexible layout options.</p>
+                            <div class="file-input-container">
+                                <label class="file-input-label">Select image files:</label>
+                                <div class="file-input-wrapper">
+                                    <span class="file-input-button" id="img-pdf-label">
+                                        <span>Choose files</span>
+                                        <i class="fas fa-paperclip"></i>
+                                    </span>
+                                    <input type="file" class="file-input" id="img-pdf" accept=".jpg,.jpeg,.png,.gif,.bmp" multiple>
+                                </div>
+                            </div>
+                            <button class="btn btn-block convert-btn">
+                                <i class="fas fa-file-pdf pdf-icon"></i> Convert to PDF
+                            </button>
+                        </div>
                     </div>
-                    
-                    <div class="converter-card">
-                        <h3>DOCX to TXT</h3>
-                        <p>Extract text from Word documents</p>
-                        <div class="file-input">
-                            <label for="docx-txt">Select DOCX file:</label>
-                            <input type="file" id="docx-txt" accept=".docx,.doc">
+                </div>
+                
+                <!-- Other Converters -->
+                <div class="converter-section">
+                    <h2><i class="fas fa-file"></i> Other Converters</h2>
+                    <div class="converter-grid">
+                        <div class="converter-card">
+                            <h3><i class="fas fa-file-excel xlsx-icon"></i> XLSX to PDF</h3>
+                            <p>Convert Excel spreadsheets to PDF with adjustable print settings and page layout.</p>
+                            <div class="file-input-container">
+                                <label class="file-input-label">Select XLSX file:</label>
+                                <div class="file-input-wrapper">
+                                    <span class="file-input-button" id="xlsx-pdf-label">
+                                        <span>Choose file</span>
+                                        <i class="fas fa-paperclip"></i>
+                                    </span>
+                                    <input type="file" class="file-input" id="xlsx-pdf" accept=".xlsx,.xls">
+                                </div>
+                            </div>
+                            <button class="btn btn-block convert-btn">
+                                <i class="fas fa-file-pdf pdf-icon"></i> Convert to PDF
+                            </button>
                         </div>
-                        <button class="btn btn-block">Convert to TXT</button>
+                        
+                        <div class="converter-card">
+                            <h3><i class="fas fa-file-powerpoint pptx-icon"></i> PPTX to PDF</h3>
+                            <p>Transform PowerPoint presentations into PDF documents with slide options.</p>
+                            <div class="file-input-container">
+                                <label class="file-input-label">Select PPTX file:</label>
+                                <div class="file-input-wrapper">
+                                    <span class="file-input-button" id="pptx-pdf-label">
+                                        <span>Choose file</span>
+                                        <i class="fas fa-paperclip"></i>
+                                    </span>
+                                    <input type="file" class="file-input" id="pptx-pdf" accept=".pptx,.ppt">
+                                </div>
+                            </div>
+                            <button class="btn btn-block convert-btn">
+                                <i class="fas fa-file-pdf pdf-icon"></i> Convert to PDF
+                            </button>
+                        </div>
+                        
+                        <div class="converter-card">
+                            <h3><i class="fas fa-file-pdf pdf-icon"></i> PDF to Images</h3>
+                            <p>Extract high-resolution images from PDF files with various format options.</p>
+                            <div class="file-input-container">
+                                <label class="file-input-label">Select PDF file:</label>
+                                <div class="file-input-wrapper">
+                                    <span class="file-input-button" id="pdf-img-label">
+                                        <span>Choose file</span>
+                                        <i class="fas fa-paperclip"></i>
+                                    </span>
+                                    <input type="file" class="file-input" id="pdf-img" accept=".pdf">
+                                </div>
+                            </div>
+                            <button class="btn btn-block convert-btn">
+                                <i class="fas fa-file-image"></i> Extract Images
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3><i class="fas fa-history"></i> Recent Files</h3>
+                <div class="recent-files">
+                    <div class="file-item">
+                        <i class="fas fa-file-pdf pdf-icon file-icon"></i>
+                        <div class="file-info">
+                            <div class="file-name">Annual_Report.pdf</div>
+                            <div class="file-date">Converted 2 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="file-item">
+                        <i class="fas fa-file-word docx-icon file-icon"></i>
+                        <div class="file-info">
+                            <div class="file-name">Project_Proposal.docx</div>
+                            <div class="file-date">Converted yesterday</div>
+                        </div>
+                    </div>
+                    <div class="file-item">
+                        <i class="fas fa-file-image jpg-icon file-icon"></i>
+                        <div class="file-info">
+                            <div class="file-name">Team_Photo.jpg</div>
+                            <div class="file-date">Converted 3 days ago</div>
+                        </div>
+                    </div>
+                    <div class="file-item">
+                        <i class="fas fa-file-excel xlsx-icon file-icon"></i>
+                        <div class="file-info">
+                            <div class="file-name">Financials_Q3.xlsx</div>
+                            <div class="file-date">Converted 1 week ago</div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Image Converters -->
-            <div class="converter-section">
-                <h2>Image Converters</h2>
-                <div class="converter-options">
-                    <div class="converter-card">
-                        <h3>JPG to PNG</h3>
-                        <p>Convert JPG images to PNG format</p>
-                        <div class="file-input">
-                            <label for="jpg-png">Select JPG file:</label>
-                            <input type="file" id="jpg-png" accept=".jpg,.jpeg">
-                        </div>
-                        <button class="btn btn-block">Convert to PNG</button>
+            <div class="sidebar-section">
+                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                <div class="quick-actions">
+                    <div class="action-btn">
+                        <i class="fas fa-folder-open"></i>
+                        <span>Open Recent</span>
                     </div>
-                    
-                    <div class="converter-card">
-                        <h3>PNG to JPG</h3>
-                        <p>Convert PNG images to JPG format</p>
-                        <div class="file-input">
-                            <label for="png-jpg">Select PNG file:</label>
-                            <input type="file" id="png-jpg" accept=".png">
-                        </div>
-                        <button class="btn btn-block">Convert to JPG</button>
+                    <div class="action-btn">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Cloud Upload</span>
                     </div>
-                    
-                    <div class="converter-card">
-                        <h3>Image to PDF</h3>
-                        <p>Convert images to PDF documents</p>
-                        <div class="file-input">
-                            <label for="img-pdf">Select image file:</label>
-                            <input type="file" id="img-pdf" accept=".jpg,.jpeg,.png,.gif,.bmp">
-                        </div>
-                        <button class="btn btn-block">Convert to PDF</button>
+                    <div class="action-btn">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </div>
+                    <div class="action-btn">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help Center</span>
                     </div>
                 </div>
             </div>
             
-            <!-- Other Converters -->
-            <div class="converter-section">
-                <h2>Other Converters</h2>
-                <div class="converter-options">
-                    <div class="converter-card">
-                        <h3>XLSX to PDF</h3>
-                        <p>Convert Excel files to PDF format</p>
-                        <div class="file-input">
-                            <label for="xlsx-pdf">Select XLSX file:</label>
-                            <input type="file" id="xlsx-pdf" accept=".xlsx,.xls">
-                        </div>
-                        <button class="btn btn-block">Convert to PDF</button>
+            <div class="sidebar-section">
+                <h3><i class="fas fa-chart-line"></i> Storage</h3>
+                <div style="margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>15.2 GB of 50 GB used</span>
+                        <span>30%</span>
                     </div>
-                    
-                    <div class="converter-card">
-                        <h3>PPTX to PDF</h3>
-                        <p>Convert PowerPoint presentations to PDF</p>
-                        <div class="file-input">
-                            <label for="pptx-pdf">Select PPTX file:</label>
-                            <input type="file" id="pptx-pdf" accept=".pptx,.ppt">
-                        </div>
-                        <button class="btn btn-block">Convert to PDF</button>
-                    </div>
-                    
-                    <div class="converter-card">
-                        <h3>PDF to Images</h3>
-                        <p>Extract images from PDF files</p>
-                        <div class="file-input">
-                            <label for="pdf-img">Select PDF file:</label>
-                            <input type="file" id="pdf-img" accept=".pdf">
-                        </div>
-                        <button class="btn btn-block">Extract Images</button>
+                    <div style="height: 8px; background-color: #e9ecef; border-radius: 4px; overflow: hidden;">
+                        <div style="width: 30%; height: 100%; background-color: var(--primary);"></div>
                     </div>
                 </div>
             </div>
@@ -306,29 +711,92 @@
     </footer>
     
     <script>
-        // Logout functionality
-        document.getElementById('logout-btn').addEventListener('click', function() {
-            // In a real app, this would call a logout API
-            alert('You have been logged out');
-            window.location.href = 'index.html';
+        // Enhanced logout functionality
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+            if (!confirm('Are you sure you want to logout?')) {
+                e.preventDefault();
+            }
         });
         
-        // File conversion functionality would be implemented here
-        // This is just a demo - in a real app, you would upload files to a server
-        // and handle the conversion there
-        document.querySelectorAll('.converter-card button').forEach(button => {
+        // File input handling with visual feedback
+        document.querySelectorAll('.file-input').forEach(input => {
+            const labelId = input.id + '-label';
+            const label = document.getElementById(labelId);
+            
+            input.addEventListener('change', function() {
+                if (this.files && this.files.length > 0) {
+                    const fileName = this.files[0].name;
+                    const labelSpan = label.querySelector('span');
+                    labelSpan.textContent = fileName;
+                    labelSpan.classList.add('file-selected');
+                    
+                    // Add icon based on file type
+                    const fileExt = fileName.split('.').pop().toLowerCase();
+                    let iconClass = 'fa-file';
+                    
+                    if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
+                    else if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
+                    else if (['jpg', 'jpeg'].includes(fileExt)) iconClass = 'fa-file-image';
+                    else if (fileExt === 'png') iconClass = 'fa-file-image';
+                    else if (['xls', 'xlsx'].includes(fileExt)) iconClass = 'fa-file-excel';
+                    else if (['ppt', 'pptx'].includes(fileExt)) iconClass = 'fa-file-powerpoint';
+                    else if (fileExt === 'txt') iconClass = 'fa-file-alt';
+                    
+                    // Update icon
+                    const icon = label.querySelector('i');
+                    icon.className = 'fas ' + iconClass;
+                }
+            });
+        });
+        
+        // Conversion functionality with loading state
+        document.querySelectorAll('.convert-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const card = this.closest('.converter-card');
-                const fileInput = card.querySelector('input[type="file"]');
+                const fileInput = card.querySelector('.file-input');
                 
-                if (!fileInput.files.length) {
+                if (!fileInput.files || fileInput.files.length === 0) {
                     alert('Please select a file first');
                     return;
                 }
                 
-                const fileName = fileInput.files[0].name;
-                const format = card.querySelector('h3').textContent;
-                alert(`Converting ${fileName} (${format}) - this would be processed by the server in a real application`);
+                // Show processing state
+                const originalHTML = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                this.disabled = true;
+                
+                // Simulate conversion (replace with actual API call)
+                setTimeout(() => {
+                    // Restore button state
+                    this.innerHTML = originalHTML;
+                    this.disabled = false;
+                    
+                    // Show success message
+                    const fileName = fileInput.files[0].name;
+                    const format = card.querySelector('h3').textContent.trim();
+                    alert(`Successfully converted "${fileName}" (${format})`);
+                    
+                    // Add to recent files (simulated)
+                    const recentFiles = document.querySelector('.recent-files');
+                    const newFile = document.createElement('div');
+                    newFile.className = 'file-item';
+                    newFile.innerHTML = `
+                        <i class="fas fa-file-pdf pdf-icon file-icon"></i>
+                        <div class="file-info">
+                            <div class="file-name">${fileName}</div>
+                            <div class="file-date">Converted just now</div>
+                        </div>
+                    `;
+                    recentFiles.prepend(newFile);
+                }, 2000);
+            });
+        });
+        
+        // Quick actions buttons
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const action = this.querySelector('span').textContent;
+                alert(`${action} action would be performed here`);
             });
         });
     </script>

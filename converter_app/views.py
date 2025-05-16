@@ -13,13 +13,23 @@ def before_login(request):
             email = request.POST.get('login_email', '').strip()
             password = request.POST.get('login_password', '').strip()
 
-            user = authenticate(request, email=email, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('after_login')
+            errors = {}
+
+            if User.objects.filter(email=email).exists():
+                user = authenticate(request, email=email, password=password)
+                if user is not None:
+                    login(request, user)
+                    return redirect('after_login')
+                else:
+                    errors['login_error'] = 'Invalid email or password'
+                    return render(request, "before_login.html", {
+                        'errors': errors,  # Pass the errors dictionary
+                        'show_login': True
+                    })
             else:
+                errors['no_user'] = 'Email not registered'
                 return render(request, "before_login.html", {
-                    'login_error': 'Invalid email or password',
+                    'errors': errors,  # Pass the errors dictionary
                     'show_login': True
                 })
             
@@ -29,6 +39,8 @@ def before_login(request):
             password = request.POST.get('register_password')
             confirm_password = request.POST.get('register_confirm_password')
 
+            min_pass_length = 8
+
             # Validation
             errors = {}
             if not name:
@@ -36,16 +48,19 @@ def before_login(request):
             if not email:
                 errors['email_error'] = 'Email is required'
             elif User.objects.filter(email=email).exists():
-                errors['email_error'] = 'Email already exists, reset password ?'
+                errors['email_error'] = 'Email already exists'
             if not password:
                 errors['password_error'] = 'Password is required'
-            elif password != confirm_password:
-                errors['password_error'] = 'Passwords do not match'
+            elif len(password) < min_pass_length:
+                errors['password_error'] = f'Password must be at least {min_pass_length} characters long'
+            if confirm_password != password:
+                errors['confirm_error'] = 'Passwords do not match'
 
             if errors:
                 return render(request, "before_login.html", {
                     **errors,
-                    'show_register': True
+                    'show_register': True,
+                    'show_login': False
                 })
             
             # Generate otp and send OTP
