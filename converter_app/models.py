@@ -58,3 +58,21 @@ class User(AbstractBaseUser):
     def has_module_perms(self, app_label):
         "Does the user have permissions to view the app `app_label`?"
         return True
+    
+    
+'''
+
+    ####################################
+    File Converter Coding Module Started
+    ####################################
+
+                                        '''
+
+
+class DocxToPdfConversion(models.Model):
+    docx_file = models.FileField(upload_to='uploads/docx/', help_text="Upload a .docx file")
+    pdf_file = models.FileField(upload_to='converted/pdf/', blank=True, null=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.docx_file.name} → PDF"

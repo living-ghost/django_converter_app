@@ -1,10 +1,16 @@
+import os
+import subprocess
+import uuid
+from django.contrib import messages
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from .models import User
 from .utils import generate_otp, send_otp_email, send_reset_email, pwd_reset_success
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
-from django.contrib import messages
+from django.http import FileResponse, HttpResponseBadRequest
+from django.core.files.storage import default_storage
 
 
 def before_login(request):
@@ -180,3 +186,60 @@ def reset_password(request):
         return redirect('verify_otp')
     
     return render(request, "reset_password.html")
+
+
+'''
+
+    ####################################
+    File Converter Coding Module Started
+    ####################################
+
+                                        '''
+
+
+def docx_to_pdf(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        docx_file = request.FILES['file']
+
+        # Check file extension
+        if not docx_file.name.lower().endswith('.docx'):
+            return HttpResponseBadRequest("Only .docx files are supported.")
+
+        # Save uploaded DOCX file
+        upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads')
+        os.makedirs(upload_dir, exist_ok=True)
+
+        unique_filename = f"{uuid.uuid4()}.docx"
+        docx_path = os.path.join(upload_dir, unique_filename)
+        with default_storage.open(docx_path, 'wb+') as destination:
+            for chunk in docx_file.chunks():
+                destination.write(chunk)
+
+        # Output directory for PDF
+        output_dir = os.path.join(settings.MEDIA_ROOT, 'converted')
+        os.makedirs(output_dir, exist_ok=True)
+
+        try:
+            # Path to LibreOffice
+            libreoffice_path = settings.LIBREOFFICE_PATH
+
+            # LibreOffice command to convert
+            command = f'"{libreoffice_path}" --headless --convert-to pdf --outdir "{output_dir}" "{docx_path}"'
+            subprocess.run(command, shell=True, check=True)
+
+            # Construct PDF file path
+            pdf_filename = os.path.splitext(os.path.basename(docx_path))[0] + '.pdf'
+            pdf_path = os.path.join(output_dir, pdf_filename)
+
+            # Serve the file as a download
+            return FileResponse(open(pdf_path, 'rb'), as_attachment=True, filename=pdf_filename)
+
+        except subprocess.CalledProcessError as e:
+            return HttpResponseBadRequest(f"Conversion failed: {str(e)}")
+
+        finally:
+            # Cleanup DOCX file after conversion
+            if os.path.exists(docx_path):
+                os.remove(docx_path)
+
+    return render(request, 'after_login.html')
