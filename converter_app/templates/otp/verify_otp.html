@@ -11,14 +11,17 @@
         :root {
             --primary: #4361ee;
             --primary-dark: #3a0ca3;
+            --primary-light: #4cc9f0;
             --accent: #f72585;
+            --accent-light: #ff70a6;
             --light: #f8f9fa;
             --dark: #212529;
             --gray: #6c757d;
             --border: #e0e0e0;
             --error: #dc3545;
             --success: #28a745;
-            --card-bg: #ffffff;
+            --warning: #ffc107;
+            --card-bg: rgba(255, 255, 255, 0.95);
         }
 
         * {
@@ -34,6 +37,10 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(67, 97, 238, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(247, 37, 133, 0.05) 0%, transparent 20%);
+            background-attachment: fixed;
         }
 
         header {
@@ -41,9 +48,10 @@
             color: white;
             padding: 1.5rem 0;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(5px);
         }
 
         header::before {
@@ -53,9 +61,15 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
             transform: rotate(30deg);
             pointer-events: none;
+            animation: shimmer 8s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(30deg) translateX(0); }
+            100% { transform: rotate(30deg) translateX(-50%); }
         }
 
         .logo {
@@ -66,6 +80,19 @@
             gap: 0.75rem;
             position: relative;
             z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo i {
+            transition: transform 0.5s ease;
+        }
+
+        .logo:hover i {
+            transform: rotate(15deg);
         }
 
         .otp-container {
@@ -74,11 +101,26 @@
             margin: 3rem auto;
             padding: 2.5rem;
             background-color: var(--card-bg);
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             position: relative;
             flex: 1;
+            backdrop-filter: blur(5px);
+            overflow: hidden;
+            animation: fadeIn 0.6s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+        }
+
+        .otp-container::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
+            opacity: 0.1;
+            z-index: -1;
         }
 
         .otp-container::before {
@@ -89,7 +131,11 @@
             width: 100%;
             height: 5px;
             background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
-            border-radius: 0.5rem 0.5rem 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .otp-container:hover::before {
+            height: 7px;
         }
 
         .otp-container h4 {
@@ -99,6 +145,8 @@
             font-size: 1.5rem;
             font-weight: 600;
             position: relative;
+            display: inline-block;
+            width: 100%;
         }
 
         .otp-container h4::after {
@@ -109,10 +157,16 @@
             background: linear-gradient(90deg, var(--primary), var(--accent));
             margin: 0.75rem auto 0;
             border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .otp-container:hover h4::after {
+            width: 80px;
+            height: 4px;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.75rem;
             position: relative;
         }
 
@@ -122,75 +176,118 @@
             font-weight: 500;
             color: var(--dark);
             font-size: 0.95rem;
+            transition: all 0.2s;
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 0.875rem 1rem;
+            padding: 1rem;
             border: 1px solid var(--border);
-            border-radius: 0.25rem;
-            font-size: 1rem;
-            transition: all 0.2s;
-            background-color: white;
+            border-radius: 0.5rem;
+            font-size: 1.25rem;
+            transition: all 0.3s;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
             letter-spacing: 0.5rem;
             text-align: center;
             font-weight: bold;
+            font-family: monospace;
         }
 
         input[type="text"]:focus {
             border-color: var(--primary);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            background-color: white;
+            transform: scale(1.02);
         }
 
         .btn {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
-            padding: 0.875rem;
+            padding: 1rem;
             width: 100%;
-            border-radius: 0.25rem;
+            border-radius: 0.5rem;
             font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(67, 97, 238, 0.1);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
 
         .btn:hover {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn:hover::before {
+            opacity: 1;
         }
 
         .btn:active {
-            transform: translateY(0);
+            transform: translateY(1px);
+            box-shadow: 0 5px 10px rgba(67, 97, 238, 0.2);
+        }
+
+        .btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover i {
+            transform: scale(1.2);
         }
 
         .alert {
-            padding: 0.875rem 1rem;
-            border-radius: 0.25rem;
-            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
             font-size: 0.95rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
         }
 
         .alert-danger {
             color: var(--error);
             background-color: rgba(220, 53, 69, 0.1);
             border-left: 4px solid var(--error);
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            transform: translate3d(0, 0, 0);
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
         .alert-success {
             color: var(--success);
             background-color: rgba(40, 167, 69, 0.1);
             border-left: 4px solid var(--success);
+            animation: fadeIn 0.6s ease-out;
         }
 
         footer {
@@ -198,9 +295,10 @@
             padding: 1.5rem;
             color: var(--gray);
             font-size: 0.95rem;
-            background-color: white;
-            border-top: 1px solid var(--border);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
             margin-top: auto;
+            backdrop-filter: blur(5px);
         }
 
         .resend-otp {
@@ -214,21 +312,142 @@
             color: var(--primary);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.2s;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 0.25rem;
+            position: relative;
+        }
+
+        .resend-link i {
+            transition: transform 0.3s ease;
         }
 
         .resend-link:hover {
             color: var(--accent);
-            text-decoration: underline;
+        }
+
+        .resend-link:hover i {
+            transform: translateX(3px);
+        }
+
+        .resend-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .resend-link:hover::after {
+            width: 100%;
+        }
+
+        /* Floating shapes background */
+        .floating-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            border-radius: 50%;
+            filter: blur(20px);
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            top: 20%;
+            left: 10%;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: var(--accent);
+            bottom: 15%;
+            right: 10%;
+            animation: float 12s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, 50px) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background-color: var(--error);
+        }
+
+        .toast i {
+            font-size: 1.2rem;
+        }
+
+        /* Ripple effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.7);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @media (max-width: 576px) {
             .otp-container {
                 margin: 2rem auto;
-                padding: 1.5rem;
+                padding: 1.75rem;
                 width: 90%;
             }
             
@@ -242,117 +461,191 @@
             
             input[type="text"] {
                 letter-spacing: 0.3rem;
-                padding: 0.75rem;
+                padding: 0.875rem;
+                font-size: 1.1rem;
             }
-        }
 
-        /* Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .otp-container {
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        /* OTP input focus effect */
-        input[type="text"] {
-            transition: all 0.3s ease;
-        }
-
-        input[type="text"]:focus {
-            transform: scale(1.02);
+            .shape-1, .shape-2 {
+                display: none;
+            }
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
-<header>
-    <div class="logo">
-        <i class="fas fa-file-export"></i>
-        <span>FileConverter Pro</span>
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
     </div>
-</header>
 
-<div class="otp-container">
-    <h4><i class="fas fa-shield-alt"></i> OTP Verification</h4>
-    
-    <form method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="otp">Enter the 4-digit OTP sent to your email:</label>
-            <input type="text" name="otp" id="otp" class="form-control" required 
-                   maxlength="4" pattern="\d{4}" title="Please enter exactly 4 digits"
-                   placeholder="••••">
+    <header>
+        <div class="logo">
+            <i class="fas fa-file-export"></i>
+            <span>FileConverter Pro</span>
         </div>
+    </header>
+
+    <div class="otp-container">
+        <h4><i class="fas fa-shield-alt"></i> OTP Verification</h4>
         
-        {% if error %}
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-circle"></i>
-                {{ error }}
+        <form method="post" id="otpForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="otp">Enter the 4-digit OTP sent to your email:</label>
+                <input type="text" name="otp" id="otp" class="form-control" required 
+                       maxlength="4" pattern="\d{4}" title="Please enter exactly 4 digits"
+                       placeholder="••••">
             </div>
-        {% endif %}
-        
-        <button type="submit" class="btn">
-            <i class="fas fa-check-circle"></i> Verify
-        </button>
-    </form>
-    
-    <div class="resend-otp">
-        Didn't receive the code? 
-        <a href="#" class="resend-link" id="resendOtp">
-            <i class="fas fa-redo"></i> Resend OTP
-        </a>
-    </div>
-</div>
-
-<footer>
-    <div class="container">
-        <p>&copy; {{ now|date:"Y" }} FileConverter Pro. All rights reserved.</p>
-    </div>
-</footer>
-
-<script>
-    // Auto move to next input (for 6-digit OTP boxes)
-    document.getElementById('otp').addEventListener('input', function(e) {
-        if (this.value.length > 6) {
-            this.value = this.value.slice(0, 4);
-        }
-    });
-    
-    // Resend OTP functionality
-    document.getElementById('resendOtp').addEventListener('click', function(e) {
-        e.preventDefault();
-        const btn = this;
-        const originalText = btn.innerHTML;
-        
-        // Show loading state
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-        btn.style.pointerEvents = 'none';
-        
-        // Simulate API call (replace with actual implementation)
-        setTimeout(() => {
-            // Restore button state
-            btn.innerHTML = originalText;
-            btn.style.pointerEvents = 'auto';
             
-            // Show success message (you might want to replace this with a proper notification)
-            alert('New OTP has been sent to your email address.');
-        }, 1500);
-    });
-    
-    // Form validation
-    document.querySelector('form').addEventListener('submit', function(e) {
-        const otpInput = document.getElementById('otp');
-        if (otpInput.value.length !== 4 || !/^\d+$/.test(otpInput.value)) {
-            e.preventDefault();
-            alert('Please enter a valid 4-digit OTP code.');
-            otpInput.focus();
-        }
-    });
-</script>
+            {% if error %}
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {{ error }}
+                </div>
+            {% endif %}
+            
+            <button type="submit" class="btn" id="verifyBtn">
+                <i class="fas fa-check-circle"></i> Verify
+            </button>
+        </form>
+        
+        <div class="resend-otp">
+            Didn't receive the code? 
+            <a href="#" class="resend-link" id="resendOtp">
+                <i class="fas fa-redo"></i> Resend OTP
+            </a>
+        </div>
+    </div>
 
+    <footer>
+        <div class="container">
+            <p>&copy; {{ now|date:"Y" }} FileConverter Pro. All rights reserved. <a href="#" style="color: var(--primary); text-decoration: none;">Privacy Policy</a> | <a href="#" style="color: var(--primary); text-decoration: none;">Terms of Service</a></p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">OTP verified successfully!</span>
+    </div>
+
+    <script>
+        // Auto move to next input (for 6-digit OTP boxes)
+        document.getElementById('otp').addEventListener('input', function(e) {
+            if (this.value.length > 4) {
+                this.value = this.value.slice(0, 4);
+            }
+        });
+        
+        // Resend OTP functionality with ripple effect
+        document.getElementById('resendOtp').addEventListener('click', function(e) {
+            e.preventDefault();
+            const btn = this;
+            const originalText = btn.innerHTML;
+            
+            // Add ripple effect
+            const rect = btn.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const ripple = document.createElement('span');
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            ripple.classList.add('ripple');
+            
+            btn.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+            
+            // Show loading state
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            btn.style.pointerEvents = 'none';
+            
+            // Simulate API call (replace with actual implementation)
+            setTimeout(() => {
+                // Restore button state
+                btn.innerHTML = originalText;
+                btn.style.pointerEvents = 'auto';
+                
+                // Show success toast
+                showToast('New OTP has been sent to your email address.');
+            }, 1500);
+        });
+        
+        // Form validation with toast notifications
+        document.getElementById('otpForm').addEventListener('submit', function(e) {
+            const otpInput = document.getElementById('otp');
+            const verifyBtn = document.getElementById('verifyBtn');
+            
+            if (otpInput.value.length !== 4 || !/^\d+$/.test(otpInput.value)) {
+                e.preventDefault();
+                showToast('Please enter a valid 4-digit OTP code.', 'error');
+                otpInput.focus();
+                return false;
+            }
+            
+            // Show processing state
+            const originalHTML = verifyBtn.innerHTML;
+            verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            verifyBtn.disabled = true;
+            
+            // In a real app, this would be handled by the form submission
+            // This is just for demonstration
+            setTimeout(() => {
+                verifyBtn.innerHTML = originalHTML;
+                verifyBtn.disabled = false;
+            }, 2000);
+            
+            return true;
+        });
+
+        // Function to show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toast.className = 'toast';
+            toast.classList.add(type);
+            toastMessage.textContent = message;
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.className = 'toast';
+                }, 300);
+            }, 3000);
+        }
+
+        // Add ripple effect to buttons
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const ripple = document.createElement('span');
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                ripple.classList.add('ripple');
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Auto-focus OTP input on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('otp').focus();
+        });
+    </script>
 </body>
 </html>

@@ -9,13 +9,18 @@
         :root {
             --primary: #4361ee;
             --primary-dark: #3a0ca3;
+            --primary-light: #4cc9f0;
             --accent: #f72585;
+            --accent-light: #ff70a6;
             --light: #f8f9fa;
             --dark: #212529;
             --gray: #6c757d;
             --border: #e0e0e0;
             --card-bg: #ffffff;
-            --sidebar-bg: #f1f3f5;
+            --sidebar-bg: #f8fafc;
+            --success: #28a745;
+            --warning: #ffc107;
+            --error: #dc3545;
         }
 
         * {
@@ -31,22 +36,28 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(67, 97, 238, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(247, 37, 133, 0.05) 0%, transparent 20%);
+            background-attachment: fixed;
         }
 
         header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             padding: 1rem 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
             position: sticky;
             top: 0;
             z-index: 100;
+            backdrop-filter: blur(5px);
         }
 
         .header-container {
             width: 100%;
             padding: 0 2rem;
             margin: 0 auto;
+            max-width: 1400px;
         }
 
         .header-content {
@@ -54,7 +65,6 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            max-width: 100%;
         }
 
         .logo {
@@ -63,6 +73,19 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        .logo i {
+            transition: transform 0.5s ease;
+        }
+
+        .logo:hover i {
+            transform: rotate(15deg);
         }
 
         .user-menu {
@@ -71,39 +94,90 @@
             gap: 1.5rem;
         }
 
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
         .btn {
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
             padding: 0.6rem 1.2rem;
-            border-radius: 0.25rem;
+            border-radius: 0.5rem;
             cursor: pointer;
             font-size: 0.95rem;
             font-weight: 500;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(67, 97, 238, 0.1);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
 
         .btn:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(67, 97, 238, 0.2);
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 10px rgba(67, 97, 238, 0.2);
+        }
+
+        .btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover i {
+            transform: scale(1.2);
         }
 
         .logout-btn {
-            background-color: #dc3545;
+            background: linear-gradient(135deg, var(--error) 0%, #c82333 100%);
         }
 
-        .logout-btn:hover {
-            background-color: #c82333;
+        .logout-btn::before {
+            background: linear-gradient(135deg, #c82333 0%, var(--error) 100%);
         }
 
         .main-wrapper {
             display: flex;
             flex: 1;
             width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .main-container {
@@ -114,12 +188,14 @@
         }
 
         .sidebar {
-            width: 300px;
+            width: 320px;
             background-color: var(--sidebar-bg);
-            border-left: 1px solid var(--border);
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
             padding: 2rem;
             display: flex;
             flex-direction: column;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
         }
 
         .main-content {
@@ -131,7 +207,20 @@
             color: var(--primary);
             font-size: 2rem;
             margin-bottom: 1rem;
-            font-weight: 600;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px;
         }
 
         .page-description {
@@ -139,6 +228,7 @@
             font-size: 1.1rem;
             margin-bottom: 2rem;
             max-width: 800px;
+            line-height: 1.6;
         }
 
         .converter-grid {
@@ -150,6 +240,7 @@
 
         .converter-section {
             margin-bottom: 3rem;
+            animation: fadeIn 0.6s ease-out;
         }
 
         .converter-section h2 {
@@ -162,24 +253,64 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .converter-section:hover h2 {
+            border-bottom-color: var(--primary-light);
         }
 
         .converter-card {
             background-color: var(--card-bg);
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            padding: 1.75rem;
             height: 100%;
             display: flex;
             flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .converter-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
             transition: all 0.3s ease;
-            border: 1px solid var(--border);
+        }
+
+        .converter-card::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
+            opacity: 0.1;
+            z-index: -1;
+            transition: all 0.5s ease;
         }
 
         .converter-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            border-color: var(--primary);
+            transform: translateY(-8px) rotateX(2deg) rotateY(2deg);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .converter-card:hover::before {
+            height: 7px;
+        }
+
+        .converter-card:hover::after {
+            transform: scale(1.5);
+            opacity: 0.15;
         }
 
         .converter-card h3 {
@@ -192,11 +323,19 @@
             gap: 0.5rem;
         }
 
+        .converter-card h3 i {
+            transition: transform 0.3s ease;
+        }
+
+        .converter-card:hover h3 i {
+            transform: scale(1.2);
+        }
+
         .converter-card p {
             color: var(--gray);
             font-size: 0.95rem;
             margin-bottom: 1.5rem;
-            line-height: 1.5;
+            line-height: 1.6;
             flex-grow: 1;
         }
 
@@ -211,6 +350,7 @@
             font-weight: 500;
             color: var(--dark);
             font-size: 0.95rem;
+            transition: all 0.2s;
         }
 
         .file-input-wrapper {
@@ -218,11 +358,12 @@
             overflow: hidden;
             display: inline-block;
             width: 100%;
+            border-radius: 0.5rem;
         }
 
         .file-input-button {
             border: 1px solid var(--border);
-            border-radius: 0.25rem;
+            border-radius: 0.5rem;
             padding: 0.75rem 1rem;
             background-color: var(--light);
             color: var(--dark);
@@ -233,15 +374,21 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .file-input-button:hover {
             background-color: #e9ecef;
+            border-color: var(--primary-light);
         }
 
         .file-input-button i {
             color: var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .file-input-button:hover i {
+            transform: scale(1.2);
         }
 
         .file-input {
@@ -257,13 +404,14 @@
         .btn-block {
             display: block;
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.875rem;
             margin-top: 0.5rem;
         }
 
         /* Sidebar Content */
         .sidebar-section {
             margin-bottom: 2rem;
+            animation: fadeIn 0.6s ease-out;
         }
 
         .sidebar-section h3 {
@@ -272,6 +420,22 @@
             margin-bottom: 1rem;
             padding-bottom: 0.5rem;
             border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-section:hover h3 {
+            border-bottom-color: var(--primary-light);
+        }
+
+        .sidebar-section h3 i {
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-section:hover h3 i {
+            transform: scale(1.2);
         }
 
         .recent-files {
@@ -284,26 +448,38 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.5rem;
-            border-radius: 0.25rem;
-            transition: background-color 0.2s;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
         }
 
         .file-item:hover {
-            background-color: #e9ecef;
+            background-color: white;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-light);
         }
 
         .file-icon {
             font-size: 1.25rem;
+            min-width: 24px;
+            text-align: center;
         }
 
         .file-info {
             flex: 1;
+            overflow: hidden;
         }
 
         .file-name {
             font-weight: 500;
             font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .file-date {
@@ -321,32 +497,88 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.75rem;
+            padding: 0.875rem;
             background-color: white;
-            border-radius: 0.25rem;
+            border-radius: 0.5rem;
             border: 1px solid var(--border);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-btn i {
+            transition: transform 0.3s ease;
         }
 
         .action-btn:hover {
             background-color: var(--primary);
             color: white;
             border-color: var(--primary);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
         }
 
         .action-btn:hover i {
             color: white;
+            transform: scale(1.2);
+        }
+
+        /* Storage meter */
+        .storage-meter {
+            margin-bottom: 1rem;
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .storage-meter:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .storage-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .storage-bar {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .storage-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            width: 30%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .storage-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--gray);
         }
 
         footer {
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.9);
             padding: 1.5rem;
             text-align: center;
             color: var(--gray);
             font-size: 0.95rem;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
             margin-top: auto;
+            backdrop-filter: blur(5px);
         }
 
         /* File type icons */
@@ -358,13 +590,66 @@
         .xlsx-icon { color: #217346; }
         .pptx-icon { color: #d24726; }
 
+        /* Floating shapes background */
+        .floating-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            border-radius: 50%;
+            filter: blur(20px);
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            top: 10%;
+            left: 5%;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: var(--accent);
+            bottom: 15%;
+            right: 10%;
+            animation: float 12s ease-in-out infinite reverse;
+        }
+
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            background: var(--primary-light);
+            top: 60%;
+            left: 20%;
+            animation: float 18s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, 50px) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        /* Responsive */
         @media (max-width: 1200px) {
             .main-container {
                 padding: 1.5rem;
             }
             
             .sidebar {
-                width: 250px;
+                width: 280px;
                 padding: 1.5rem;
             }
         }
@@ -384,6 +669,10 @@
             
             .main-container {
                 order: 1;
+            }
+
+            .shape-1, .shape-2, .shape-3 {
+                display: none;
             }
         }
 
@@ -408,10 +697,23 @@
             }
         }
 
-        /* Animation for file selection */
+        /* Animations */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
 
         .file-selected {
@@ -419,10 +721,62 @@
             font-weight: 500;
             color: var(--primary);
         }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.7);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background-color: var(--error);
+        }
+
+        .toast.warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .toast i {
+            font-size: 1.2rem;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
     <header>
         <div class="header-container">
             <div class="header-content">
@@ -431,7 +785,9 @@
                     <span>FileConverter Pro</span>
                 </div>
                 <div class="user-menu">
-                    <span>Welcome, {{ user }}</span>
+                    <div class="" title="Your profile">
+                        {{ user }}
+                    </div>
                     <form action="{% url 'user_logout' %}" method="post">
                         {% csrf_token %}
                         <button class="btn logout-btn" id="logout-btn">
@@ -447,7 +803,10 @@
         <div class="main-container">
             <div class="main-content">
                 <h1>File Conversion Dashboard</h1>
-                <p class="page-description">Convert your files between various formats quickly and securely with our powerful conversion tools.</p>
+                <p class="page-description">
+                    Convert your files between various formats quickly and securely with our powerful conversion tools. 
+                    Drag and drop files or click to browse your device. All conversions are encrypted for your privacy.
+                </p>
                 
                 <!-- Document Converters -->
                 <div class="converter-section">
@@ -455,7 +814,7 @@
                     <div class="converter-grid">
                         <div class="converter-card">
                             <h3><i class="fas fa-file-word docx-icon"></i> DOCX to PDF</h3>
-                            <p>Convert Word documents to PDF format while preserving all formatting and layout elements.</p>
+                            <p>Convert Word documents to PDF format while preserving all formatting and layout elements with our high-fidelity conversion engine.</p>
                             <div class="file-input-container">
                                 <label class="file-input-label">Select DOCX file:</label>
                                 <div class="file-input-wrapper">
@@ -473,7 +832,7 @@
                         
                         <div class="converter-card">
                             <h3><i class="fas fa-file-pdf pdf-icon"></i> PDF to DOCX</h3>
-                            <p>Transform PDF files into editable Word documents with accurate text recognition.</p>
+                            <p>Transform PDF files into editable Word documents with accurate text recognition and layout preservation.</p>
                             <div class="file-input-container">
                                 <label class="file-input-label">Select PDF file:</label>
                                 <div class="file-input-wrapper">
@@ -491,7 +850,7 @@
                         
                         <div class="converter-card">
                             <h3><i class="fas fa-file-word docx-icon"></i> DOCX to TXT</h3>
-                            <p>Extract plain text content from Word documents without any formatting.</p>
+                            <p>Extract plain text content from Word documents without any formatting for clean text output.</p>
                             <div class="file-input-container">
                                 <label class="file-input-label">Select DOCX file:</label>
                                 <div class="file-input-wrapper">
@@ -515,7 +874,7 @@
                     <div class="converter-grid">
                         <div class="converter-card">
                             <h3><i class="fas fa-file-image jpg-icon"></i> JPG to PNG</h3>
-                            <p>Convert JPG images to high-quality PNG format with transparency support.</p>
+                            <p>Convert JPG images to high-quality PNG format with transparency support and lossless compression.</p>
                             <div class="file-input-container">
                                 <label class="file-input-label">Select JPG file:</label>
                                 <div class="file-input-wrapper">
@@ -533,7 +892,7 @@
                         
                         <div class="converter-card">
                             <h3><i class="fas fa-file-image png-icon"></i> PNG to JPG</h3>
-                            <p>Transform PNG images to JPG format with customizable quality settings.</p>
+                            <p>Transform PNG images to JPG format with customizable quality settings and background options.</p>
                             <div class="file-input-container">
                                 <label class="file-input-label">Select PNG file:</label>
                                 <div class="file-input-wrapper">
@@ -551,7 +910,7 @@
                         
                         <div class="converter-card">
                             <h3><i class="fas fa-images"></i> Image to PDF</h3>
-                            <p>Combine multiple images into a single PDF document with flexible layout options.</p>
+                            <p>Combine multiple images into a single PDF document with flexible layout and quality options.</p>
                             <div class="file-input-container">
                                 <label class="file-input-label">Select image files:</label>
                                 <div class="file-input-wrapper">
@@ -575,7 +934,7 @@
                     <div class="converter-grid">
                         <div class="converter-card">
                             <h3><i class="fas fa-file-excel xlsx-icon"></i> XLSX to PDF</h3>
-                            <p>Convert Excel spreadsheets to PDF with adjustable print settings and page layout.</p>
+                            <p>Convert Excel spreadsheets to PDF with adjustable print settings, page layout, and sheet selection.</p>
                             <div class="file-input-container">
                                 <label class="file-input-label">Select XLSX file:</label>
                                 <div class="file-input-wrapper">
@@ -593,7 +952,7 @@
                         
                         <div class="converter-card">
                             <h3><i class="fas fa-file-powerpoint pptx-icon"></i> PPTX to PDF</h3>
-                            <p>Transform PowerPoint presentations into PDF documents with slide options.</p>
+                            <p>Transform PowerPoint presentations into PDF documents with slide range and notes options.</p>
                             <div class="file-input-container">
                                 <label class="file-input-label">Select PPTX file:</label>
                                 <div class="file-input-wrapper">
@@ -611,7 +970,7 @@
                         
                         <div class="converter-card">
                             <h3><i class="fas fa-file-pdf pdf-icon"></i> PDF to Images</h3>
-                            <p>Extract high-resolution images from PDF files with various format options.</p>
+                            <p>Extract high-resolution images from PDF files with format selection (JPG, PNG) and DPI settings.</p>
                             <div class="file-input-container">
                                 <label class="file-input-label">Select PDF file:</label>
                                 <div class="file-input-wrapper">
@@ -639,30 +998,34 @@
                     <div class="file-item">
                         <i class="fas fa-file-pdf pdf-icon file-icon"></i>
                         <div class="file-info">
-                            <div class="file-name">Annual_Report.pdf</div>
+                            <div class="file-name">Annual_Report_2023.pdf</div>
                             <div class="file-date">Converted 2 hours ago</div>
                         </div>
+                        <i class="fas fa-ellipsis-v" style="color: var(--gray); cursor: pointer;"></i>
                     </div>
                     <div class="file-item">
                         <i class="fas fa-file-word docx-icon file-icon"></i>
                         <div class="file-info">
-                            <div class="file-name">Project_Proposal.docx</div>
+                            <div class="file-name">Project_Proposal_Final.docx</div>
                             <div class="file-date">Converted yesterday</div>
                         </div>
+                        <i class="fas fa-ellipsis-v" style="color: var(--gray); cursor: pointer;"></i>
                     </div>
                     <div class="file-item">
                         <i class="fas fa-file-image jpg-icon file-icon"></i>
                         <div class="file-info">
-                            <div class="file-name">Team_Photo.jpg</div>
+                            <div class="file-name">Team_Photo_Retreat.jpg</div>
                             <div class="file-date">Converted 3 days ago</div>
                         </div>
+                        <i class="fas fa-ellipsis-v" style="color: var(--gray); cursor: pointer;"></i>
                     </div>
                     <div class="file-item">
                         <i class="fas fa-file-excel xlsx-icon file-icon"></i>
                         <div class="file-info">
-                            <div class="file-name">Financials_Q3.xlsx</div>
+                            <div class="file-name">Financials_Q3_2023.xlsx</div>
                             <div class="file-date">Converted 1 week ago</div>
                         </div>
+                        <i class="fas fa-ellipsis-v" style="color: var(--gray); cursor: pointer;"></i>
                     </div>
                 </div>
             </div>
@@ -670,19 +1033,19 @@
             <div class="sidebar-section">
                 <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
                 <div class="quick-actions">
-                    <div class="action-btn">
+                    <div class="action-btn" id="open-recent">
                         <i class="fas fa-folder-open"></i>
                         <span>Open Recent</span>
                     </div>
-                    <div class="action-btn">
+                    <div class="action-btn" id="cloud-upload">
                         <i class="fas fa-cloud-upload-alt"></i>
                         <span>Cloud Upload</span>
                     </div>
-                    <div class="action-btn">
+                    <div class="action-btn" id="settings">
                         <i class="fas fa-cog"></i>
                         <span>Settings</span>
                     </div>
-                    <div class="action-btn">
+                    <div class="action-btn" id="help-center">
                         <i class="fas fa-question-circle"></i>
                         <span>Help Center</span>
                     </div>
@@ -691,33 +1054,62 @@
             
             <div class="sidebar-section">
                 <h3><i class="fas fa-chart-line"></i> Storage</h3>
-                <div style="margin-bottom: 1rem;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <span>15.2 GB of 50 GB used</span>
-                        <span>30%</span>
+                <div class="storage-meter">
+                    <div class="storage-info">
+                        <span>15.2 GB used</span>
+                        <span>30% of 50 GB</span>
                     </div>
-                    <div style="height: 8px; background-color: #e9ecef; border-radius: 4px; overflow: hidden;">
-                        <div style="width: 30%; height: 100%; background-color: var(--primary);"></div>
+                    <div class="storage-bar">
+                        <div class="storage-progress"></div>
+                    </div>
+                    <div class="storage-labels">
+                        <span>0 GB</span>
+                        <span>50 GB</span>
                     </div>
                 </div>
+                <button class="btn btn-block" id="upgrade-storage">
+                    <i class="fas fa-rocket"></i> Upgrade Storage
+                </button>
             </div>
         </div>
     </div>
     
     <footer>
         <div class="container">
-            <p>&copy; 2023 FileConverter Pro. All rights reserved.</p>
+            <p>&copy; 2023 FileConverter Pro. All rights reserved. <a href="#" style="color: var(--primary); text-decoration: none;">Terms</a> | <a href="#" style="color: var(--primary); text-decoration: none;">Privacy</a></p>
         </div>
     </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">File converted successfully!</span>
+    </div>
     
     <script>
-        // Enhanced logout functionality
+        // Enhanced logout functionality with ripple effect
         document.getElementById('logout-btn').addEventListener('click', function(e) {
             if (!confirm('Are you sure you want to logout?')) {
                 e.preventDefault();
+            } else {
+                // Add ripple effect
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const ripple = document.createElement('span');
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                ripple.classList.add('ripple');
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
             }
         });
-        
+
         // File input handling with visual feedback
         document.querySelectorAll('.file-input').forEach(input => {
             const labelId = input.id + '-label';
@@ -725,40 +1117,89 @@
             
             input.addEventListener('change', function() {
                 if (this.files && this.files.length > 0) {
-                    const fileName = this.files[0].name;
+                    const fileName = this.files.length > 1 ? 
+                        `${this.files.length} files selected` : 
+                        this.files[0].name;
+                    
                     const labelSpan = label.querySelector('span');
                     labelSpan.textContent = fileName;
                     labelSpan.classList.add('file-selected');
                     
                     // Add icon based on file type
-                    const fileExt = fileName.split('.').pop().toLowerCase();
+                    const fileExt = this.files.length > 1 ? 
+                        'multiple' : 
+                        fileName.split('.').pop().toLowerCase();
+                    
                     let iconClass = 'fa-file';
                     
-                    if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
+                    if (fileExt === 'multiple') iconClass = 'fa-copy';
+                    else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
                     else if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
                     else if (['jpg', 'jpeg'].includes(fileExt)) iconClass = 'fa-file-image';
                     else if (fileExt === 'png') iconClass = 'fa-file-image';
                     else if (['xls', 'xlsx'].includes(fileExt)) iconClass = 'fa-file-excel';
                     else if (['ppt', 'pptx'].includes(fileExt)) iconClass = 'fa-file-powerpoint';
                     else if (fileExt === 'txt') iconClass = 'fa-file-alt';
+                    else if (['gif', 'bmp'].includes(fileExt)) iconClass = 'fa-file-image';
                     
                     // Update icon
                     const icon = label.querySelector('i');
                     icon.className = 'fas ' + iconClass;
                 }
             });
+
+            // Add drag and drop functionality
+            const card = input.closest('.converter-card');
+            card.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                card.style.border = '2px dashed var(--primary)';
+                card.style.transform = 'translateY(-5px)';
+            });
+
+            card.addEventListener('dragleave', () => {
+                card.style.border = '1px solid rgba(255, 255, 255, 0.3)';
+                card.style.transform = '';
+            });
+
+            card.addEventListener('drop', (e) => {
+                e.preventDefault();
+                card.style.border = '1px solid rgba(255, 255, 255, 0.3)';
+                card.style.transform = '';
+                
+                if (e.dataTransfer.files.length) {
+                    input.files = e.dataTransfer.files;
+                    const event = new Event('change');
+                    input.dispatchEvent(event);
+                }
+            });
         });
         
-        // Conversion functionality with loading state
+        // Conversion functionality with loading state and toast notifications
         document.querySelectorAll('.convert-btn').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function(e) {
                 const card = this.closest('.converter-card');
                 const fileInput = card.querySelector('.file-input');
                 
                 if (!fileInput.files || fileInput.files.length === 0) {
-                    alert('Please select a file first');
+                    showToast('Please select a file first', 'error');
                     return;
                 }
+                
+                // Add ripple effect
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const ripple = document.createElement('span');
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                ripple.classList.add('ripple');
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
                 
                 // Show processing state
                 const originalHTML = this.innerHTML;
@@ -772,31 +1213,130 @@
                     this.disabled = false;
                     
                     // Show success message
-                    const fileName = fileInput.files[0].name;
+                    const fileName = fileInput.files.length > 1 ? 
+                        `${fileInput.files.length} files` : 
+                        fileInput.files[0].name;
+                    
                     const format = card.querySelector('h3').textContent.trim();
-                    alert(`Successfully converted "${fileName}" (${format})`);
+                    showToast(`Successfully converted "${fileName}" (${format})`);
                     
                     // Add to recent files (simulated)
-                    const recentFiles = document.querySelector('.recent-files');
-                    const newFile = document.createElement('div');
-                    newFile.className = 'file-item';
-                    newFile.innerHTML = `
-                        <i class="fas fa-file-pdf pdf-icon file-icon"></i>
-                        <div class="file-info">
-                            <div class="file-name">${fileName}</div>
-                            <div class="file-date">Converted just now</div>
-                        </div>
-                    `;
-                    recentFiles.prepend(newFile);
+                    addToRecentFiles(fileInput.files[0].name, format);
                 }, 2000);
             });
         });
-        
-        // Quick actions buttons
+
+        // Function to show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toast.className = 'toast';
+            toast.classList.add(type);
+            toastMessage.textContent = message;
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.className = 'toast';
+                }, 300);
+            }, 3000);
+        }
+
+        // Function to add to recent files
+        function addToRecentFiles(fileName, format) {
+            const recentFiles = document.querySelector('.recent-files');
+            const newFile = document.createElement('div');
+            newFile.className = 'file-item';
+            
+            let iconClass = 'fa-file';
+            if (format.includes('DOCX')) iconClass = 'fa-file-word';
+            else if (format.includes('PDF')) iconClass = 'fa-file-pdf';
+            else if (format.includes('JPG') || format.includes('PNG') || format.includes('Image')) iconClass = 'fa-file-image';
+            else if (format.includes('XLSX')) iconClass = 'fa-file-excel';
+            else if (format.includes('PPTX')) iconClass = 'fa-file-powerpoint';
+            else if (format.includes('TXT')) iconClass = 'fa-file-alt';
+            
+            newFile.innerHTML = `
+                <i class="fas ${iconClass} ${iconClass.replace('fa-', '').replace('fa-', '')}-icon file-icon"></i>
+                <div class="file-info">
+                    <div class="file-name">${fileName}</div>
+                    <div class="file-date">Converted just now</div>
+                </div>
+                <i class="fas fa-ellipsis-v" style="color: var(--gray); cursor: pointer;"></i>
+            `;
+            
+            // Add animation
+            newFile.style.opacity = '0';
+            newFile.style.transform = 'translateY(10px)';
+            recentFiles.prepend(newFile);
+            
+            // Animate in
+            setTimeout(() => {
+                newFile.style.transition = 'all 0.3s ease';
+                newFile.style.opacity = '1';
+                newFile.style.transform = 'translateY(0)';
+            }, 10);
+            
+            // Limit to 10 recent files
+            if (recentFiles.children.length > 10) {
+                recentFiles.removeChild(recentFiles.lastChild);
+            }
+        }
+
+        // Quick actions buttons with ripple effect
         document.querySelectorAll('.action-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function(e) {
                 const action = this.querySelector('span').textContent;
-                alert(`${action} action would be performed here`);
+                
+                // Add ripple effect
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const ripple = document.createElement('span');
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                ripple.classList.add('ripple');
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+                
+                showToast(`${action} action would be performed here`, 'warning');
+            });
+        });
+
+        // Upgrade storage button
+        document.getElementById('upgrade-storage').addEventListener('click', function(e) {
+            showToast('Storage upgrade options would be shown here', 'warning');
+        });
+
+        // Animate storage progress bar on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const progressBar = document.querySelector('.storage-progress');
+            setTimeout(() => {
+                progressBar.style.width = '30%';
+            }, 500);
+        });
+
+        // Make sidebar sections collapsible
+        document.querySelectorAll('.sidebar-section h3').forEach(header => {
+            header.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    content.style.opacity = '1';
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    content.style.opacity = '0.9';
+                }
             });
         });
     </script>
