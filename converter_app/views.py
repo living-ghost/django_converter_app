@@ -1,16 +1,29 @@
 import os
 import subprocess
 import uuid
+import tempfile
 from django.contrib import messages
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
-from .models import User
+from .models import User, DocxToPdfConversion, PdfToDocxConversion
 from .utils import generate_otp, send_otp_email, send_reset_email, pwd_reset_success
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.http import FileResponse, HttpResponseBadRequest
 from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from pdf2docx import parse
+from PyPDF2 import PdfReader
+
+
+'''
+
+    ########################################
+    User Registration/OTP/Login Code Started
+    ########################################
+
+                                            '''
 
 
 def before_login(request):
@@ -202,21 +215,24 @@ def docx_to_pdf(request):
         docx_file = request.FILES['file']
 
         # Check file extension
-        if not docx_file.name.lower().endswith('.docx'):
-            return HttpResponseBadRequest("Only .docx files are supported.")
+        if not docx_file.name.lower().endswith('.docx', '.doc'):
+            return HttpResponseBadRequest("Only .docx and .doc files are supported.")
 
-        # Save uploaded DOCX file
-        upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads')
-        os.makedirs(upload_dir, exist_ok=True)
-
-        unique_filename = f"{uuid.uuid4()}.docx"
-        docx_path = os.path.join(upload_dir, unique_filename)
-        with default_storage.open(docx_path, 'wb+') as destination:
-            for chunk in docx_file.chunks():
-                destination.write(chunk)
-
+        # Create database record first
+        conversion = DocxToPdfConversion()
+        
+        # Save the original DOCX file to the database
+        original_filename = docx_file.name
+        conversion.docx_file.save(original_filename, ContentFile(docx_file.read()))
+        
+        # Reset file pointer after reading
+        docx_file.seek(0)
+        
+        # Get the saved path from the database record
+        docx_path = conversion.docx_file.path
+        
         # Output directory for PDF
-        output_dir = os.path.join(settings.MEDIA_ROOT, 'converted')
+        output_dir = os.path.join(settings.MEDIA_ROOT, 'converted', 'pdf')
         os.makedirs(output_dir, exist_ok=True)
 
         try:
@@ -224,22 +240,131 @@ def docx_to_pdf(request):
             libreoffice_path = settings.LIBREOFFICE_PATH
 
             # LibreOffice command to convert
-            command = f'"{libreoffice_path}" --headless --convert-to pdf --outdir "{output_dir}" "{docx_path}"'
-            subprocess.run(command, shell=True, check=True)
+            command = [
+                libreoffice_path,
+                '--headless',
+                '--convert-to', 'pdf',
+                '--outdir', output_dir,
+                docx_path
+            ]
+            
+            # Run without shell=True for better security
+            subprocess.run(command, check=True)
 
             # Construct PDF file path
             pdf_filename = os.path.splitext(os.path.basename(docx_path))[0] + '.pdf'
             pdf_path = os.path.join(output_dir, pdf_filename)
 
+            # Verify PDF was created
+            if not os.path.exists(pdf_path):
+                raise subprocess.CalledProcessError(1, command, "PDF file was not created")
+
+            # Save PDF to database
+            with open(pdf_path, 'rb') as pdf_file:
+                conversion.pdf_file.save(pdf_filename, ContentFile(pdf_file.read()))
+            
             # Serve the file as a download
-            return FileResponse(open(pdf_path, 'rb'), as_attachment=True, filename=pdf_filename)
+            response = FileResponse(conversion.pdf_file.open('rb'), 
+                                  as_attachment=True, 
+                                  filename=pdf_filename)
+            
+            return response
 
         except subprocess.CalledProcessError as e:
+            # Delete the database record if conversion fails
+            conversion.delete()
             return HttpResponseBadRequest(f"Conversion failed: {str(e)}")
+        except Exception as e:
+            # Delete the database record if any other error occurs
+            conversion.delete()
+            return HttpResponseBadRequest(f"An error occurred: {str(e)}")
 
-        finally:
-            # Cleanup DOCX file after conversion
-            if os.path.exists(docx_path):
-                os.remove(docx_path)
+    return render(request, 'after_login.html')
+
+def pdf_to_docx(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        pdf_file = request.FILES['file']
+
+        if not pdf_file.name.lower().endswith('.pdf'):
+            return HttpResponseBadRequest("Only PDF files are supported")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Save uploaded PDF
+            pdf_path = os.path.join(temp_dir, pdf_file.name)
+            with open(pdf_path, 'wb+') as f:
+                for chunk in pdf_file.chunks():
+                    f.write(chunk)
+
+            output_dir = os.path.join(settings.MEDIA_ROOT, 'converted', 'docx')
+            os.makedirs(output_dir, exist_ok=True)
+
+            base_name = os.path.splitext(pdf_file.name)[0]
+            docx_filename = f"{base_name}_converted.docx"  # Modified filename
+            docx_path = os.path.join(output_dir, docx_filename)
+
+            try:
+                # 1. First convert with strict page dimensions
+                parse(
+                    pdf_path,
+                    docx_path,
+                    layout_engine='fixed',
+                    kwargs={
+                        'page_width': 8.27 * 72,  # A4 width in points (210mm)
+                        'page_height': 11.69 * 72, # A4 height (297mm)
+                        'margin': 0.5 * 72,       # 0.5 inch margins
+                    },
+                    text_settings={
+                        'paragraph_space': 0,      # Remove extra spacing
+                        'line_space': 1.0,         # Single line spacing
+                        'orphan_control': True,    # Prevent lone lines
+                    },
+                    table_settings={
+                        'split_strategy': 'avoid',  # Keep tables on one page
+                    }
+                )
+
+                # 2. Post-process with python-docx to fix formatting
+                from docx import Document
+                from docx.shared import Pt, Inches
+                
+                doc = Document(docx_path)
+                
+                # Set document-wide page settings
+                section = doc.sections[0]
+                section.page_width = Inches(8.5)   # A4 width
+                section.page_height = Inches(11.03)  # A4 height
+                section.left_margin = Inches(0)
+                section.right_margin = Inches(0)
+                
+                # Adjust paragraph formatting
+                for paragraph in doc.paragraphs:
+                    paragraph_format = paragraph.paragraph_format
+                    paragraph_format.keep_together = True  # Prevent splits
+                    paragraph_format.keep_with_next = True  # Stay with next paragraph
+                    paragraph_format.widow_control = True   # Prevent orphans
+                
+                doc.save(docx_path)
+
+                # 3. Final validation
+                if os.path.getsize(docx_path) < 1024:  # Check if file is too small
+                    raise RuntimeError("Conversion failed - minimal output")
+
+                # Save to database and return
+                conversion = PdfToDocxConversion()
+                with open(pdf_path, 'rb') as f:
+                    conversion.pdf_file.save(pdf_file.name, ContentFile(f.read()))
+                with open(docx_path, 'rb') as f:
+                    conversion.docx_file.save(docx_filename, ContentFile(f.read()))
+
+                return FileResponse(
+                    open(docx_path, 'rb'),
+                    as_attachment=True,
+                    filename=docx_filename
+                )
+
+            except Exception as e:
+                if os.path.exists(docx_path):
+                    os.remove(docx_path)
+                return HttpResponseBadRequest(f"Conversion error: {str(e)}")
 
     return render(request, 'after_login.html')

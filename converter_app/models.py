@@ -76,3 +76,11 @@ class DocxToPdfConversion(models.Model):
 
     def __str__(self):
         return f"{self.docx_file.name} → PDF"
+    
+class PdfToDocxConversion(models.Model):
+    pdf_file = models.FileField(upload_to='uploads/pdf/', help_text="Upload a .pdf file")
+    docx_file = models.FileField(upload_to='converted/docx/', blank=True, null=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.pdf_file.name} → DOCX"

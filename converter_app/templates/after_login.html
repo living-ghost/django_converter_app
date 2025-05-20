@@ -76,21 +76,26 @@
                         </div>
                         
                         <div class="converter-card">
-                            <h3><i class="fas fa-file-pdf pdf-icon"></i> PDF to DOCX</h3>
-                            <p>Transform PDF files into editable Word documents with accurate text recognition and layout preservation.</p>
-                            <div class="file-input-container">
-                                <label class="file-input-label">Select PDF file:</label>
-                                <div class="file-input-wrapper">
-                                    <span class="file-input-button" id="pdf-docx-label">
-                                        <span>Choose file</span>
-                                        <i class="fas fa-paperclip"></i>
-                                    </span>
-                                    <input type="file" class="file-input" id="pdf-docx" accept=".pdf">
+                            <form action="{% url 'pdf_to_docx' %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <h3><i class="fas fa-file-pdf pdf-icon"></i> PDF to DOCX</h3>
+                                <p>Transform PDF files into editable Word documents with accurate text recognition and layout preservation.</p>
+                                
+                                <div class="file-input-container">
+                                    <label class="file-input-label">Select PDF file:</label>
+                                    <div class="file-input-wrapper">
+                                        <span class="file-input-button" id="pdf-docx-label">
+                                            <span id="pdf-file-name">Choose file</span>
+                                            <i class="fas fa-paperclip"></i>
+                                        </span>
+                                        <input type="file" name="file" class="file-input" id="pdf-docx" accept=".pdf" style="display: none;">
+                                    </div>
                                 </div>
-                            </div>
-                            <button class="btn btn-block convert-btn">
-                                <i class="fas fa-file-word docx-icon"></i> Convert to DOCX
-                            </button>
+
+                                <button class="btn btn-block convert-btn">
+                                    <i class="fas fa-file-word docx-icon"></i> Convert to DOCX
+                                </button>
+                            </form>
                         </div>
                         
                         <div class="converter-card">

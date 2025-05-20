@@ -8,5 +8,6 @@ urlpatterns=[
     path('user/logout/', views.user_logout, name='user_logout'),
     path('reset/password/', views.reset_password, name='reset_password'),
     
-    path('docx/-/pdf/', views.docx_to_pdf, name='docx_to_pdf')
+    path('docx/-/pdf/', views.docx_to_pdf, name='docx_to_pdf'),
+    path('pdf/-/docx/', views.pdf_to_docx, name='pdf_to_docx')
 ]
