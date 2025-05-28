@@ -19,44 +19,26 @@ pipeline {
         EMAIL_HOST_PASSWORD   = credentials('EMAIL_HOST_PASSWORD')
 
         LIBREOFFICE_PATH      = 'C:\\Program Files\\LibreOffice\\program\\soffice.exe'
+        PYTHON_PATH           = 'C:\\Users\\HP\\AppData\\Local\\Programs\\Python\\Python313\\python.exe'
     }
 
     stages {
-        stage('Check Python') {
-            steps {
-                bat 'python --version'
-                bat 'pip --version'
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
                 bat '''
-                    python -m venv venv
+                    "%PYTHON_PATH%" -m venv venv
                     call venv\\Scripts\\activate
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
+                    venv\\Scripts\\python.exe -m pip install --upgrade pip
+                    venv\\Scripts\\python.exe -m pip install -r requirements.txt
                 '''
             }
         }
 
-        stage('Run Django Checks') {
+        stage('Run Django Server') {
             steps {
                 bat '''
                     call venv\\Scripts\\activate
-                    python manage.py check
-                '''
-            }
-        }
-
-        // Optional stage to run server, not recommended for CI
-        // Use only if you're using Jenkins like a dev launch tool
-        // Comment this out in production
-        stage('Run Django Server (dev only)') {
-            steps {
-                bat '''
-                    call venv\\Scripts\\activate
-                    start /B python manage.py runserver 0.0.0.0:8000
+                    venv\\Scripts\\python.exe manage.py runserver 0.0.0.0:8000
                 '''
             }
         }
