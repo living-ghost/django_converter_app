@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.validators import validate_email
+from django.contrib.auth.models import User
 
 class UserManager(BaseUserManager):
     def create_user(self, email, full_name, password=None, **extra_fields):
@@ -70,6 +71,7 @@ class User(AbstractBaseUser):
 
 
 class DocxToPdfConversion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     docx_file = models.FileField(upload_to='uploads/docx/', help_text="Upload a .docx file")
     pdf_file = models.FileField(upload_to='converted/pdf/', blank=True, null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
@@ -78,9 +80,46 @@ class DocxToPdfConversion(models.Model):
         return f"{self.docx_file.name} → PDF"
     
 class PdfToDocxConversion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     pdf_file = models.FileField(upload_to='uploads/pdf/', help_text="Upload a .pdf file")
     docx_file = models.FileField(upload_to='converted/docx/', blank=True, null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.pdf_file.name} → DOCX"
+    
+class DocxToTxtConversion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    docx_file = models.FileField(upload_to='uploads/docx/', help_text="Upload a .docx file")
+    txt_file = models.FileField(upload_to='converted/txt/', blank=True, null=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.txt_file.name} → TXT"
+    
+class JpgToPngConversion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    jpg_file = models.FileField(upload_to='uploads/jpg/', help_text="Upload a .jpg file")
+    png_file = models.FileField(upload_to='converted/png/', blank=True, null=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.png_file.name} → JPG"
+    
+class PngToJpgConversion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    png_file = models.FileField(upload_to='uploads/png/', help_text="Upload a .png file")
+    jpg_file = models.FileField(upload_to='converted/jpg/', blank=True, null=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.jpg_file.name} → PNG"
+    
+class ImgToPdfConversion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    img_file = models.FileField(upload_to='uploads/img/', help_text="Upload a .img file")
+    pdf_file = models.FileField(upload_to='converted/pdf/', blank=True, null=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.pdf_file.name} → IMG"

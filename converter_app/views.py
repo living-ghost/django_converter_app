@@ -2,11 +2,15 @@ import os
 import subprocess
 import uuid
 import tempfile
+from docx import Document
 from django.contrib import messages
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
-from .models import User, DocxToPdfConversion, PdfToDocxConversion
+from .models import (
+    User, DocxToPdfConversion, PdfToDocxConversion, 
+    DocxToTxtConversion, JpgToPngConversion,
+    PngToJpgConversion, ImgToPdfConversion )
 from .utils import generate_otp, send_otp_email, send_reset_email, pwd_reset_success
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
@@ -15,6 +19,9 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from pdf2docx import parse
 from PyPDF2 import PdfReader
+from PIL import Image
+from itertools import chain
+from django.utils.timezone import now
 
 
 '''
@@ -158,11 +165,34 @@ def verify_otp(request):
 
     return render(request, "otp/verify_otp.html")
 
-
 @login_required
 @never_cache
 def after_login(request):
-    return render(request, "after_login.html")
+    user = request.user
+    recent_docx_to_pdf = DocxToPdfConversion.objects.filter(user=user).exclude(pdf_file='').order_by('-uploaded_at')[:5]
+    recent_pdf_to_docx = PdfToDocxConversion.objects.filter(user=user).exclude(docx_file='').order_by('-uploaded_at')[:5]
+    recent_docx_to_txt = DocxToTxtConversion.objects.filter(user=user).exclude(txt_file='').order_by('-uploaded_at')[:5]
+    recent_jpg_to_png = JpgToPngConversion.objects.filter(user=user).exclude(png_file='').order_by('-uploaded_at')[:5]
+    recent_png_to_jpg = PngToJpgConversion.objects.filter(user=user).exclude(jpg_file='').order_by('-uploaded_at')[:5]
+    recent_img_to_pdf = ImgToPdfConversion.objects.filter(user=user).exclude(pdf_file='').order_by('-uploaded_at')[:5]
+
+    # Combine and sort all
+    combined = sorted(
+        chain(
+            recent_docx_to_pdf,
+            recent_pdf_to_docx,
+            recent_docx_to_txt,
+            recent_jpg_to_png,
+            recent_png_to_jpg,
+            recent_img_to_pdf,
+        ),
+        key=lambda x: x.uploaded_at,
+        reverse=True
+    )[:5]
+
+    return render(request, 'after_login.html', {
+        'recent_files': combined,
+    })
 
 @login_required
 def user_logout(request):
@@ -215,11 +245,11 @@ def docx_to_pdf(request):
         docx_file = request.FILES['file']
 
         # Check file extension
-        if not docx_file.name.lower().endswith('.docx', '.doc'):
+        if not docx_file.name.lower().endswith(('.docx', '.doc')):
             return HttpResponseBadRequest("Only .docx and .doc files are supported.")
 
         # Create database record first
-        conversion = DocxToPdfConversion()
+        conversion = DocxToPdfConversion(user=request.user)
         
         # Save the original DOCX file to the database
         original_filename = docx_file.name
@@ -350,7 +380,7 @@ def pdf_to_docx(request):
                     raise RuntimeError("Conversion failed - minimal output")
 
                 # Save to database and return
-                conversion = PdfToDocxConversion()
+                conversion = PdfToDocxConversion(user=request.user)
                 with open(pdf_path, 'rb') as f:
                     conversion.pdf_file.save(pdf_file.name, ContentFile(f.read()))
                 with open(docx_path, 'rb') as f:
@@ -366,5 +396,199 @@ def pdf_to_docx(request):
                 if os.path.exists(docx_path):
                     os.remove(docx_path)
                 return HttpResponseBadRequest(f"Conversion error: {str(e)}")
+
+    return render(request, 'after_login.html')
+
+def docx_to_txt(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        docx_file = request.FILES['file']
+
+        # Check file extension
+        if not docx_file.name.lower().endswith(('.docx', '.doc')):
+            return HttpResponseBadRequest("Only .docx and .doc files are supported.")
+
+        # Create DB record first
+        conversion = DocxToTxtConversion(user=request.user)
+        original_filename = docx_file.name
+        conversion.docx_file.save(original_filename, ContentFile(docx_file.read()))
+        
+        # Reset file pointer
+        docx_file.seek(0)
+
+        # Get saved path
+        docx_path = conversion.docx_file.path
+
+        # Output directory
+        output_dir = os.path.join(settings.MEDIA_ROOT, 'converted', 'txt')
+        os.makedirs(output_dir, exist_ok=True)
+
+        try:
+            # Read DOCX file content
+            document = Document(docx_path)
+            text_content = '\n'.join([para.text for para in document.paragraphs])
+
+            # Save as .txt
+            txt_filename = os.path.splitext(os.path.basename(docx_path))[0] + '.txt'
+            txt_path = os.path.join(output_dir, txt_filename)
+            with open(txt_path, 'w', encoding='utf-8') as txt_file:
+                txt_file.write(text_content)
+
+            # Save to DB
+            with open(txt_path, 'rb') as txt_file:
+                conversion.txt_file.save(txt_filename, ContentFile(txt_file.read()))
+
+            # Return as file download
+            response = FileResponse(conversion.txt_file.open('rb'), 
+                                    as_attachment=True, 
+                                    filename=txt_filename)
+            return response
+
+        except Exception as e:
+            conversion.delete()
+            return HttpResponseBadRequest(f"An error occurred: {str(e)}")
+
+    return render(request, 'after_login.html')
+
+def jpg_to_png(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        jpg_file = request.FILES['file']
+
+        # Check file extension
+        if not jpg_file.name.lower().endswith('.jpg'):
+            return HttpResponseBadRequest("Only .jpg files are supported.")
+
+        # Create DB record
+        conversion = JpgToPngConversion(user=request.user)
+        original_filename = jpg_file.name
+        conversion.jpg_file.save(original_filename, ContentFile(jpg_file.read()))
+
+        # Reset pointer
+        jpg_file.seek(0)
+
+        # Saved path
+        jpg_path = conversion.jpg_file.path
+
+        # Output dir
+        output_dir = os.path.join(settings.MEDIA_ROOT, 'converted', 'png')
+        os.makedirs(output_dir, exist_ok=True)
+
+        try:
+            # Convert using PIL
+            with Image.open(jpg_path) as img:
+                png_filename = os.path.splitext(os.path.basename(jpg_path))[0] + '.png'
+                png_path = os.path.join(output_dir, png_filename)
+                img.save(png_path, 'PNG')
+
+            # Save converted file
+            with open(png_path, 'rb') as png_file:
+                conversion.png_file.save(png_filename, ContentFile(png_file.read()))
+
+            # Serve file as download
+            return FileResponse(conversion.png_file.open('rb'), 
+                                as_attachment=True, 
+                                filename=png_filename)
+
+        except Exception as e:
+            conversion.delete()
+            return HttpResponseBadRequest(f"Conversion failed: {str(e)}")
+
+    return render(request, 'after_login.html')
+
+def png_to_jpg(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        png_file = request.FILES['file']
+
+        # Check file extension
+        if not png_file.name.lower().endswith('.png'):
+            return HttpResponseBadRequest("Only .png files are supported.")
+
+        # Create DB record
+        conversion = PngToJpgConversion(user=request.user)  # You can rename this model to something generic if needed
+        original_filename = png_file.name
+        conversion.jpg_file.save(original_filename, ContentFile(png_file.read()))
+
+        # Reset pointer
+        png_file.seek(0)
+
+        # Saved path
+        png_path = conversion.jpg_file.path
+
+        # Output dir
+        output_dir = os.path.join(settings.MEDIA_ROOT, 'converted', 'jpg')
+        os.makedirs(output_dir, exist_ok=True)
+
+        try:
+            # Convert using PIL
+            with Image.open(png_path) as img:
+                # Convert to RGB to avoid transparency errors
+                rgb_img = img.convert('RGB')
+                jpg_filename = os.path.splitext(os.path.basename(png_path))[0] + '.jpg'
+                jpg_path = os.path.join(output_dir, jpg_filename)
+                rgb_img.save(jpg_path, 'JPEG')
+
+            # Save converted file
+            with open(jpg_path, 'rb') as jpg_file_obj:
+                conversion.png_file.save(jpg_filename, ContentFile(jpg_file_obj.read()))
+
+            # Serve file as download
+            return FileResponse(conversion.png_file.open('rb'),
+                                as_attachment=True,
+                                filename=jpg_filename)
+
+        except Exception as e:
+            conversion.delete()
+            return HttpResponseBadRequest(f"Conversion failed: {str(e)}")
+
+    return render(request, 'after_login.html')
+
+def img_to_pdf(request):
+    if request.method == 'POST' and request.FILES.getlist('files'):
+        uploaded_files = request.FILES.getlist('files')
+
+        # Create a temporary directory
+        temp_dir = os.path.join(settings.MEDIA_ROOT, 'temp_images')
+        os.makedirs(temp_dir, exist_ok=True)
+
+        image_objects = []
+        conversion = ImgToPdfConversion(user=request.user)
+
+        try:
+            # Validate and save each file
+            for uploaded_file in uploaded_files:
+                if not uploaded_file.name.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp')):
+                    return HttpResponseBadRequest("Only image files (PNG, JPG, JPEG, BMP) are supported.")
+
+                file_path = os.path.join(temp_dir, uploaded_file.name)
+                with open(file_path, 'wb+') as destination:
+                    for chunk in uploaded_file.chunks():
+                        destination.write(chunk)
+
+                # Open the image and convert to RGB
+                image = Image.open(file_path).convert('RGB')
+                image_objects.append(image)
+
+            if not image_objects:
+                return HttpResponseBadRequest("No valid images provided.")
+
+            # Define PDF output path
+            output_dir = os.path.join(settings.MEDIA_ROOT, 'converted', 'pdf')
+            os.makedirs(output_dir, exist_ok=True)
+            pdf_filename = 'converted_output.pdf'
+            pdf_path = os.path.join(output_dir, pdf_filename)
+
+            # Save all images as one PDF
+            image_objects[0].save(pdf_path, save_all=True, append_images=image_objects[1:])
+
+            # Save to model
+            with open(pdf_path, 'rb') as pdf_file:
+                conversion.pdf_file.save(pdf_filename, ContentFile(pdf_file.read()))
+                conversion.save()
+
+            # Return the file as response
+            return FileResponse(conversion.pdf_file.open('rb'), as_attachment=True, filename=pdf_filename)
+
+        except Exception as e:
+            conversion.delete()
+            return HttpResponseBadRequest(f"Conversion failed: {str(e)}")
 
     return render(request, 'after_login.html')

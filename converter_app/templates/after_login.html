@@ -79,7 +79,9 @@
                             <form action="{% url 'pdf_to_docx' %}" method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <h3><i class="fas fa-file-pdf pdf-icon"></i> PDF to DOCX</h3>
-                                <p>Transform PDF files into editable Word documents with accurate text recognition and layout preservation.</p>
+                                <p>Transform PDF files into editable Word documents with accurate text recognition and layout preservation.
+                                <br><br>    
+                                </p>
                                 
                                 <div class="file-input-container">
                                     <label class="file-input-label">Select PDF file:</label>
@@ -91,7 +93,7 @@
                                         <input type="file" name="file" class="file-input" id="pdf-docx" accept=".pdf" style="display: none;">
                                     </div>
                                 </div>
-
+                                
                                 <button class="btn btn-block convert-btn">
                                     <i class="fas fa-file-word docx-icon"></i> Convert to DOCX
                                 </button>
@@ -99,21 +101,28 @@
                         </div>
                         
                         <div class="converter-card">
-                            <h3><i class="fas fa-file-word docx-icon"></i> DOCX to TXT</h3>
-                            <p>Extract plain text content from Word documents without any formatting for clean text output.</p>
-                            <div class="file-input-container">
-                                <label class="file-input-label">Select DOCX file:</label>
-                                <div class="file-input-wrapper">
-                                    <span class="file-input-button" id="docx-txt-label">
-                                        <span>Choose file</span>
-                                        <i class="fas fa-paperclip"></i>
-                                    </span>
-                                    <input type="file" class="file-input" id="docx-txt" accept=".docx,.doc">
+                            <form action="{% url 'docx_to_txt' %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <h3><i class="fas fa-file-word docx-icon"></i> DOCX to TXT</h3>
+                                <p>Extract plain text content from Word documents without any formatting for clean text output as result.
+                                <br><br>
+                                </p>
+
+                                <div class="file-input-container">
+                                    <label class="file-input-label">Select DOCX file:</label>
+                                    <div class="file-input-wrapper">
+                                        <span class="file-input-button" id="docx-txt-label">
+                                            <span id="docx-file-name">Choose file</span>
+                                            <i class="fas fa-paperclip"></i>
+                                        </span>
+                                        <input type="file" name="file" class="file-input" id="docx-txt" accept=".docx" style="display: none;">
+                                    </div>
                                 </div>
-                            </div>
-                            <button class="btn btn-block convert-btn">
-                                <i class="fas fa-file-alt txt-icon"></i> Convert to TXT
-                            </button>
+
+                                <button class="btn btn-block convert-btn">
+                                    <i class="fas fa-file-alt txt-icon"></i> Convert to TXT
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -123,57 +132,72 @@
                     <h2><i class="fas fa-image"></i> Image Converters</h2>
                     <div class="converter-grid">
                         <div class="converter-card">
-                            <h3><i class="fas fa-file-image jpg-icon"></i> JPG to PNG</h3>
-                            <p>Convert JPG images to high-quality PNG format with transparency support and lossless compression.</p>
-                            <div class="file-input-container">
-                                <label class="file-input-label">Select JPG file:</label>
-                                <div class="file-input-wrapper">
-                                    <span class="file-input-button" id="jpg-png-label">
-                                        <span>Choose file</span>
-                                        <i class="fas fa-paperclip"></i>
-                                    </span>
-                                    <input type="file" class="file-input" id="jpg-png" accept=".jpg,.jpeg">
+                            <form action="{% url 'jpg_to_png' %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <h3><i class="fas fa-file-image jpg-icon"></i> JPG to PNG</h3>
+                                <p>Convert JPG images to high-quality PNG format with transparency support and lossless compression.</p>
+
+                                <div class="file-input-container">
+                                    <label class="file-input-label">Select JPG file:</label>
+                                    <div class="file-input-wrapper">
+                                        <span class="file-input-button" id="jpg-png-label">
+                                            <span id="jpg-file-name">Choose file</span>
+                                            <i class="fas fa-paperclip"></i>
+                                        </span>
+                                        <input type="file" name="file" class="file-input" id="jpg-png" accept=".jpg" style="display: none;">
+                                    </div>
                                 </div>
-                            </div>
-                            <button class="btn btn-block convert-btn">
-                                <i class="fas fa-file-image png-icon"></i> Convert to PNG
-                            </button>
+
+                                <button class="btn btn-block convert-btn">
+                                    <i class="fas fa-file-image png-icon"></i> Convert to PNG
+                                </button>
+                            </form>
                         </div>
                         
                         <div class="converter-card">
-                            <h3><i class="fas fa-file-image png-icon"></i> PNG to JPG</h3>
-                            <p>Transform PNG images to JPG format with customizable quality settings and background options.</p>
-                            <div class="file-input-container">
-                                <label class="file-input-label">Select PNG file:</label>
-                                <div class="file-input-wrapper">
-                                    <span class="file-input-button" id="png-jpg-label">
-                                        <span>Choose file</span>
-                                        <i class="fas fa-paperclip"></i>
-                                    </span>
-                                    <input type="file" class="file-input" id="png-jpg" accept=".png">
+                            <form action="{% url 'png_to_jpg' %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <h3><i class="fas fa-file-image png-icon"></i> PNG to JPG</h3>
+                                <p>Transform PNG images to JPG format with customizable quality settings and background options with easy.</p>
+                                
+                                <div class="file-input-container">
+                                    <label class="file-input-label">Select PNG file:</label>
+                                    <div class="file-input-wrapper">
+                                        <span class="file-input-button" id="png-jpg-label">
+                                            <span id="png-file-name">Choose file</span>
+                                            <i class="fas fa-paperclip"></i>
+                                        </span>
+                                        <input type="file" name="file" class="file-input" id="png-jpg" accept=".png" style="display: none;">
+                                    </div>
                                 </div>
-                            </div>
-                            <button class="btn btn-block convert-btn">
-                                <i class="fas fa-file-image jpg-icon"></i> Convert to JPG
-                            </button>
+                             
+                                <button class="btn btn-block convert-btn">
+                                    <i class="fas fa-file-image jpg-icon"></i> Convert to JPG
+                                </button>
+                            </form>
                         </div>
                         
                         <div class="converter-card">
-                            <h3><i class="fas fa-images"></i> Image to PDF</h3>
-                            <p>Combine multiple images into a single PDF document with flexible layout and quality options.</p>
-                            <div class="file-input-container">
-                                <label class="file-input-label">Select image files:</label>
-                                <div class="file-input-wrapper">
-                                    <span class="file-input-button" id="img-pdf-label">
-                                        <span>Choose files</span>
-                                        <i class="fas fa-paperclip"></i>
-                                    </span>
-                                    <input type="file" class="file-input" id="img-pdf" accept=".jpg,.jpeg,.png,.gif,.bmp" multiple>
+                            <form action="{% url 'img_to_pdf' %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <h3><i class="fas fa-images"></i> Image to PDF</h3>
+                                <p>Combine multiple images into a single PDF document with flexible layout and quality options with ease.</p>
+                                
+                                <div class="file-input-container">
+                                    <label class="file-input-label">Select image files:</label>
+                                    <div class="file-input-wrapper">
+                                        <span class="file-input-button" id="img-pdf-label">
+                                            <span id="img-file-name">Choose file</span>
+                                            <i class="fas fa-paperclip"></i>
+                                        </span>
+                                        <input type="file" name="files" class="file-input" id="img-pdf" accept=".png, .jpg, .jpeg, .bmp" style="display: none;">
+                                    </div>
                                 </div>
-                            </div>
-                            <button class="btn btn-block convert-btn">
-                                <i class="fas fa-file-pdf pdf-icon"></i> Convert to PDF
-                            </button>
+                                
+                                <button class="btn btn-block convert-btn">
+                                    <i class="fas fa-file-pdf pdf-icon"></i> Convert to PDF
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -242,55 +266,42 @@
         
         <!-- Right Sidebar -->
         <div class="sidebar">
+            {% load file_extras %}  {# If you're using basename filter #}
             <div class="sidebar-section">
                 <h3><i class="fas fa-history"></i> Recent Files</h3>
                 <div class="recent-files">
-                    <div class="file-item">
-                        <i class="fas fa-file-pdf pdf-icon file-icon"></i>
-                        <div class="file-info">
-                            <div class="file-name">Annual_Report_2023.pdf</div>
-                            <div class="file-date">Converted 2 hours ago</div>
+                    {% for file in recent_files %}
+                        <div class="file-item">
+                            <i class="fas fa-file file-icon"></i>
+                            <div class="file-info">
+                                <div class="file-name">
+                                    {% if file.pdf_file %}
+                                        <a href="{{ file.pdf_file.url }}" target="_blank">{{ file.pdf_file.name|basename }}</a>
+                                    {% elif file.docx_file %}
+                                        <a href="{{ file.docx_file.url }}" target="_blank">{{ file.docx_file.name|basename }}</a>
+                                    {% elif file.txt_file %}
+                                        <a href="{{ file.txt_file.url }}" target="_blank">{{ file.txt_file.name|basename }}</a>
+                                    {% elif file.jpg_file %}
+                                        <a href="{{ file.jpg_file.url }}" target="_blank">{{ file.jpg_file.name|basename }}</a>
+                                    {% elif file.png_file %}
+                                        <a href="{{ file.png_file.url }}" target="_blank">{{ file.png_file.name|basename }}</a>
+                                    {% elif file.img_file %}
+                                        <a href="{{ file.img_file.url }}" target="_blank">{{ file.img_file.name|basename }}</a>
+                                    {% endif %}
+                                </div>
+                                <div class="file-date">Converted {{ file.uploaded_at|timesince }} ago</div>
+                            </div>
+                            <i class="fas fa-ellipsis-v" style="color: var(--gray); cursor: pointer;"></i>
                         </div>
-                        <i class="fas fa-ellipsis-v" style="color: var(--gray); cursor: pointer;"></i>
-                    </div>
-                    <div class="file-item">
-                        <i class="fas fa-file-word docx-icon file-icon"></i>
-                        <div class="file-info">
-                            <div class="file-name">Project_Proposal_Final.docx</div>
-                            <div class="file-date">Converted yesterday</div>
-                        </div>
-                        <i class="fas fa-ellipsis-v" style="color: var(--gray); cursor: pointer;"></i>
-                    </div>
-                    <div class="file-item">
-                        <i class="fas fa-file-image jpg-icon file-icon"></i>
-                        <div class="file-info">
-                            <div class="file-name">Team_Photo_Retreat.jpg</div>
-                            <div class="file-date">Converted 3 days ago</div>
-                        </div>
-                        <i class="fas fa-ellipsis-v" style="color: var(--gray); cursor: pointer;"></i>
-                    </div>
-                    <div class="file-item">
-                        <i class="fas fa-file-excel xlsx-icon file-icon"></i>
-                        <div class="file-info">
-                            <div class="file-name">Financials_Q3_2023.xlsx</div>
-                            <div class="file-date">Converted 1 week ago</div>
-                        </div>
-                        <i class="fas fa-ellipsis-v" style="color: var(--gray); cursor: pointer;"></i>
-                    </div>
+                    {% empty %}
+                        <p>No recent files found.</p>
+                    {% endfor %}
                 </div>
             </div>
             
             <div class="sidebar-section">
                 <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
                 <div class="quick-actions">
-                    <div class="action-btn" id="open-recent">
-                        <i class="fas fa-folder-open"></i>
-                        <span>Open Recent</span>
-                    </div>
-                    <div class="action-btn" id="cloud-upload">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <span>Cloud Upload</span>
-                    </div>
                     <div class="action-btn" id="settings">
                         <i class="fas fa-cog"></i>
                         <span>Settings</span>
@@ -300,26 +311,6 @@
                         <span>Help Center</span>
                     </div>
                 </div>
-            </div>
-            
-            <div class="sidebar-section">
-                <h3><i class="fas fa-chart-line"></i> Storage</h3>
-                <div class="storage-meter">
-                    <div class="storage-info">
-                        <span>15.2 GB used</span>
-                        <span>30% of 50 GB</span>
-                    </div>
-                    <div class="storage-bar">
-                        <div class="storage-progress"></div>
-                    </div>
-                    <div class="storage-labels">
-                        <span>0 GB</span>
-                        <span>50 GB</span>
-                    </div>
-                </div>
-                <button class="btn btn-block" id="upgrade-storage">
-                    <i class="fas fa-rocket"></i> Upgrade Storage
-                </button>
             </div>
         </div>
     </div>
