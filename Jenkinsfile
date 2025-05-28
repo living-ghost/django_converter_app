@@ -18,28 +18,27 @@ pipeline {
         EMAIL_HOST_USER       = credentials('EMAIL_HOST_USER')
         EMAIL_HOST_PASSWORD   = credentials('EMAIL_HOST_PASSWORD')
 
-        LIBREOFFICE_PATH      = 'C:\\Program Files\\LibreOffice\\program\\soffice.exe'
-        PYTHON_PATH           = 'C:\\Users\\HP\\AppData\\Local\\Programs\\Python\\Python313\\python.exe'
+        IMAGE_NAME            = 'living9host/converter_app'
     }
 
     stages {
-        stage('Install Dependencies') {
+        stage('Build Docker Image') {
             steps {
-                bat '''
-                    "%PYTHON_PATH%" -m venv venv
-                    call venv\\Scripts\\activate
-                    venv\\Scripts\\python.exe -m pip install --upgrade pip
-                    venv\\Scripts\\python.exe -m pip install -r requirements.txt
-                '''
+                script {
+                    echo "Building Docker image: ${IMAGE_NAME}:latest"
+                    docker.build("${IMAGE_NAME}:latest")
+                }
             }
         }
 
-        stage('Run Django Server') {
+        stage('Push to Docker Hub') {
             steps {
-                bat '''
-                    call venv\\Scripts\\activate
-                    venv\\Scripts\\python.exe manage.py runserver 0.0.0.0:8000
-                '''
+                script {
+                    echo "Pushing image to Docker Hub as ${IMAGE_NAME}:latest"
+                    docker.withRegistry('https://index.docker.io/v1/', 'jenkins-docker-integration') {
+                        docker.image("${IMAGE_NAME}:latest").push()
+                    }
+                }
             }
         }
     }
