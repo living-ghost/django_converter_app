@@ -22,21 +22,41 @@ pipeline {
     }
 
     stages {
+        stage('Check Python') {
+            steps {
+                bat 'python --version'
+                bat 'pip --version'
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 bat '''
                     python -m venv venv
                     call venv\\Scripts\\activate
+                    pip install --upgrade pip
                     pip install -r requirements.txt
                 '''
             }
         }
 
-        stage('Run Django Server') {
+        stage('Run Django Checks') {
             steps {
                 bat '''
                     call venv\\Scripts\\activate
-                    python manage.py runserver 0.0.0.0:8000
+                    python manage.py check
+                '''
+            }
+        }
+
+        // Optional stage to run server, not recommended for CI
+        // Use only if you're using Jenkins like a dev launch tool
+        // Comment this out in production
+        stage('Run Django Server (dev only)') {
+            steps {
+                bat '''
+                    call venv\\Scripts\\activate
+                    start /B python manage.py runserver 0.0.0.0:8000
                 '''
             }
         }
